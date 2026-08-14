@@ -38,6 +38,27 @@
 
 </details>
 
+<details>
+<summary><strong>充电详情</strong></summary>
+
+![Tesla Cockpit 充电详情](docs/screenshots/charging-anonymized.png)
+
+</details>
+
+<details>
+<summary><strong>车辆状态</strong></summary>
+
+![Tesla Cockpit 车辆状态](docs/screenshots/vehicle-status-anonymized.png)
+
+</details>
+
+<details>
+<summary><strong>统计详情</strong></summary>
+
+![Tesla Cockpit 统计详情](docs/screenshots/statistics-anonymized.png)
+
+</details>
+
 ## 环境要求
 
 - Node.js 18 或更高版本
