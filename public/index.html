@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tesla Cockpit</title>
+  <link rel="stylesheet" href="/styles.css?v=apple-20260812-22">
+  </head>
+  <body>
+    <div id="menuBackdrop" class="menu-backdrop" hidden></div>
+    <aside id="appMenu" class="app-menu" aria-label="车辆数据菜单" aria-hidden="true" hidden>
+      <header class="menu-header">
+        <img src="/assets/tesla-wordmark.png" alt="Tesla">
+        <button id="menuClose" class="icon-button menu-close" type="button" aria-label="关闭菜单" title="关闭菜单">×</button>
+      </header>
+      <div class="menu-vehicle">
+        <span>车辆数据中心</span>
+        <strong id="menuVehicleName">Model S</strong>
+      </div>
+      <nav id="appMenuNav" class="menu-nav" aria-label="主菜单">
+        <a class="menu-link" href="/" data-route="/" data-section="home"><span>主页</span><small>车辆实时概览</small></a>
+        <a class="menu-link" href="/trips" data-route="/trips" data-section="trips"><span>行程</span><small>行程记录与单次详情</small></a>
+        <a class="menu-link" href="/charging" data-route="/charging" data-section="charging"><span>充电</span><small>充电记录与功率曲线</small></a>
+        <a class="menu-link" href="/energy" data-route="/energy" data-section="energy"><span>能耗</span><small>能耗趋势与能量回收</small></a>
+        <a class="menu-link" href="/battery" data-route="/battery" data-section="battery"><span>电池</span><small>电量、续航与停车能耗</small></a>
+        <a class="menu-link" href="/status" data-route="/status" data-section="status"><span>车辆状态</span><small>状态时间线与持续时间</small></a>
+        <a class="menu-link" href="/statistics" data-route="/statistics" data-section="statistics"><span>统计</span><small>选定时间范围汇总</small></a>
+        <a class="menu-link" href="/settings" data-route="/settings" data-section="settings"><span>设置</span><small>账户与数据源状态</small></a>
+      </nav>
+      <footer class="menu-footer">
+        <a href="/logout">退出登录</a>
+      </footer>
+    </aside>
+
+    <main id="homeView" class="cockpit">
+      <section class="left-rail">
+        <button id="menuTrigger" class="tesla-logo-card" type="button" aria-label="打开车辆数据菜单" title="打开菜单">
+          <img class="tesla-wordmark" src="/assets/tesla-wordmark.png" alt="Tesla">
+        </button>
+
+        <div class="status-block">
+          <p class="label">车辆状态</p>
+          <div class="state-line">
+            <span id="stateDot" class="state-dot"></span>
+            <strong id="stateText">连接中</strong>
+          </div>
+          <p id="stateSince" class="muted">正在读取 Grafana 数据</p>
+        </div>
+
+        <div class="metric-stack">
+          <article>
+            <span>预估续航</span>
+            <strong id="estimatedRange">-- km</strong>
+          </article>
+          <article>
+            <span>里程表</span>
+            <strong id="odometer">-- km</strong>
+          </article>
+          <article>
+            <span>平均能耗</span>
+            <strong id="avgConsumption">-- Wh/km</strong>
+          </article>
+          <article class="today-drive-card">
+            <span>今日行驶</span>
+            <strong id="todayDistance">-- km</strong>
+            <div id="todayDriveDetails" class="today-drive-details">
+              <span>时长 <b id="todayDuration">--</b></span>
+              <span>平均 <b id="todayConsumption">--</b></span>
+            </div>
+            <p id="todayEmpty" class="today-empty" hidden>今日尚未行驶</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="car-stage" aria-label="车辆概览">
+        <div class="top-bar">
+          <div>
+            <h2 id="modelName">Model S</h2>
+          </div>
+          <div class="system-strip" aria-label="系统状态">
+            <span id="headerState">--</span>
+            <span id="refreshCadence">--</span>
+            <span id="dataFreshness" class="data-freshness" role="status">正在连接</span>
+            <time id="updatedAt">--:--</time>
+            <button id="manualRefresh" class="manual-refresh icon-command" type="button" aria-label="手动刷新数据" title="刷新数据"><span aria-hidden="true">↻</span></button>
+            <a class="logout-command" href="/logout">退出</a>
+          </div>
+        </div>
+
+        <div class="hero-dashboard">
+          <article class="hero-vehicle-panel">
+          <section class="battery-panel">
+            <div class="battery-panel-head">
+              <span>当前电量</span>
+              <span id="batteryBadge" class="battery-badge">电量偏低</span>
+            </div>
+            <strong id="mainBattery">--%</strong>
+            <div class="battery-pack" aria-hidden="true">
+              <div id="batterySegments" class="battery-segments"></div>
+              <div class="battery-tip"></div>
+            </div>
+            <div class="battery-advice">
+              <span class="battery-advice-icon">⚡</span>
+              <strong id="batteryAdviceStatus">低电量</strong>
+              <span></span>
+              <span id="batteryAdviceText">建议尽快充电</span>
+            </div>
+          </section>
+
+          <div class="vehicle-card">
+            <img class="model-s-illustration" src="/assets/model-s-line-cutout.png" alt="白色 Model S 线稿车辆图">
+            <svg class="model-s-vector" viewBox="0 0 1100 380" role="img" aria-label="白色 Model S 风格车辆模型">
+              <defs>
+                <linearGradient id="bodyPaint" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#ffffff"></stop>
+                  <stop offset="50%" stop-color="#f2f4f7"></stop>
+                  <stop offset="100%" stop-color="#cbd1da"></stop>
+                </linearGradient>
+                <linearGradient id="glassPaint" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#202b36"></stop>
+                  <stop offset="58%" stop-color="#435466"></stop>
+                  <stop offset="100%" stop-color="#9aa8b9"></stop>
+                </linearGradient>
+                <radialGradient id="wheelShine" cx="50%" cy="45%" r="60%">
+                  <stop offset="0%" stop-color="#7b818b"></stop>
+                  <stop offset="54%" stop-color="#292d34"></stop>
+                  <stop offset="100%" stop-color="#0f1115"></stop>
+                </radialGradient>
+                <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+                  <feDropShadow dx="0" dy="28" stdDeviation="22" flood-color="#000000" flood-opacity="0.18"></feDropShadow>
+                </filter>
+              </defs>
+              <ellipse class="car-ground" cx="565" cy="309" rx="430" ry="35"></ellipse>
+              <g filter="url(#softShadow)">
+                <path class="car-window" d="M324 150 C431 72 621 69 763 137 C800 155 828 178 848 209 L286 207 C297 181 309 162 324 150 Z"></path>
+                <path class="car-glass-cut" d="M485 98 C551 82 653 88 752 137 C784 153 806 171 821 194 L495 190 C475 158 470 128 485 98 Z"></path>
+                <path class="car-body" d="M67 248 C135 197 253 181 396 179 L779 184 C875 188 969 212 1022 256 C1043 274 1038 297 1011 309 C931 342 787 344 588 339 L258 335 C154 333 82 316 49 289 C29 272 39 262 67 248 Z"></path>
+                <path class="car-shoulder" d="M122 243 C249 205 442 200 753 205 C862 207 944 224 1002 254 C770 235 335 234 122 243 Z"></path>
+                <path class="car-nose" d="M772 210 C872 214 953 233 1009 258 C930 249 855 244 768 239 Z"></path>
+                <path class="car-lower" d="M53 286 C226 313 787 312 1024 278 C1018 298 1000 310 971 318 C762 349 230 347 72 309 C58 305 50 296 53 286 Z"></path>
+                <path class="front-light" d="M913 244 C956 247 991 256 1018 270 C981 273 945 269 907 258 Z"></path>
+                <path class="rear-light" d="M65 255 C104 240 144 234 190 234 C153 251 115 263 62 268 Z"></path>
+                <path class="door-line" d="M456 204 C438 242 437 284 451 326"></path>
+                <path class="door-line" d="M683 203 C700 248 700 288 684 329"></path>
+                <path class="side-sill" d="M222 303 C388 317 726 317 908 300"></path>
+                <circle class="wheel" cx="260" cy="313" r="61"></circle>
+                <circle class="wheel" cx="825" cy="313" r="61"></circle>
+                <circle class="wheel-core" cx="260" cy="313" r="24"></circle>
+                <circle class="wheel-core" cx="825" cy="313" r="24"></circle>
+              </g>
+            </svg>
+          </div>
+          </article>
+
+          <article class="energy-chart-card">
+            <div class="energy-chart-head">
+              <div>
+                <strong>能耗趋势</strong>
+                <span id="energyChartRange">最近 100 km · 10 km 滚动平均</span>
+              </div>
+              <div class="energy-controls" role="group" aria-label="能耗口径">
+                <div class="energy-mode-switch">
+                  <button id="energyModeGross" class="energy-mode" type="button" data-mode="gross" aria-pressed="true">纯消耗</button>
+                  <button id="energyModeNet" class="energy-mode" type="button" data-mode="net" aria-pressed="false">净能耗</button>
+                </div>
+                <small class="energy-average"><em>平均</em><b id="energyChartAvg">-- Wh/km</b></small>
+              </div>
+            </div>
+            <div class="energy-plot">
+            <svg id="energyChart" class="energy-chart" viewBox="0 0 640 128" preserveAspectRatio="none" aria-label="最近 100 km 能耗趋势">
+              <defs>
+                <linearGradient id="energyFade" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#0a84ff" stop-opacity="0.21"></stop>
+                  <stop offset="100%" stop-color="#0a84ff" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <g class="energy-grid" aria-hidden="true">
+                <line class="energy-grid-horizontal" x1="18" y1="14" x2="622" y2="14"></line>
+                <line class="energy-grid-horizontal" x1="18" y1="34" x2="622" y2="34"></line>
+                <line class="energy-grid-horizontal" x1="18" y1="54" x2="622" y2="54"></line>
+                <line class="energy-grid-horizontal" x1="18" y1="74" x2="622" y2="74"></line>
+                <line class="energy-grid-horizontal" x1="18" y1="94" x2="622" y2="94"></line>
+                <line class="energy-grid-horizontal" x1="18" y1="114" x2="622" y2="114"></line>
+                <line class="energy-grid-vertical" x1="18" y1="14" x2="18" y2="114"></line>
+              </g>
+              <path id="energyArea" d=""></path>
+              <line id="energyAverageLine" x1="18" x2="622"></line>
+              <path id="energyLine" d=""></path>
+              <g id="energyMinMarker" class="energy-extrema" opacity="0">
+                <circle id="energyMinDot" r="4"></circle>
+              </g>
+              <g id="energyMaxMarker" class="energy-extrema" opacity="0">
+                <circle id="energyMaxDot" r="4"></circle>
+              </g>
+              <g id="energyCurrentMarker" class="energy-extrema" opacity="0">
+                <circle id="energyCurrentDot" r="4"></circle>
+              </g>
+              <g id="energyHover" class="energy-hover" opacity="0">
+                <line id="energyHoverLine" y1="10" y2="122"></line>
+                <circle id="energyHoverDot" r="5"></circle>
+                <g id="energyHoverBubble">
+                  <rect id="energyHoverBubbleBg" width="112" height="28" rx="14"></rect>
+                  <text id="energyHoverText" x="56" y="18" text-anchor="middle">-- Wh/km</text>
+                </g>
+              </g>
+            </svg>
+            <span class="energy-axis-unit">Wh/km</span>
+            <span id="energyAxisHigh" class="energy-axis-label energy-axis-high">400</span>
+            <span id="energyAxisUpper" class="energy-axis-label energy-axis-upper">300</span>
+            <span id="energyAxisMid" class="energy-axis-label energy-axis-mid">200</span>
+            <span id="energyAxisLower" class="energy-axis-label energy-axis-lower">100</span>
+            <span id="energyAxisLowerMid" class="energy-axis-label energy-axis-lower-mid">50</span>
+            <span id="energyAxisLow" class="energy-axis-label energy-axis-low">0</span>
+            <span id="energyXStart" class="energy-x-label energy-x-start">-100 km</span>
+            <span id="energyX20" class="energy-x-label energy-x-20">-80 km</span>
+            <span id="energyX40" class="energy-x-label energy-x-40">-60 km</span>
+            <span id="energyX60" class="energy-x-label energy-x-60">-40 km</span>
+            <span id="energyX80" class="energy-x-label energy-x-80">-20 km</span>
+            <span id="energyXEnd" class="energy-x-label energy-x-end">现在</span>
+            <span id="energyMinLabel" class="energy-point-label energy-point-min">--</span>
+            <span id="energyMaxLabel" class="energy-point-label energy-point-max">--</span>
+            <span id="energyCurrentLabel" class="energy-point-label energy-point-current">--</span>
+            <div id="energyHoverTooltip" class="energy-hover-tooltip">-- Wh/km</div>
+            </div>
+          </article>
+
+          <article class="hero-stat month-time">
+            <span>本月驾驶时间</span>
+            <strong id="monthDuration">--</strong>
+            <small>累计行程</small>
+          </article>
+
+          <article class="hero-stat month-distance">
+            <span>本月累计里程</span>
+            <strong id="monthDistance">-- km</strong>
+            <small>当月统计</small>
+          </article>
+        </div>
+
+        <div class="bottom-metrics">
+          <article>
+            <span>能量回收</span>
+            <strong id="ratedRange">-- km</strong>
+          </article>
+          <article>
+            <span>总能耗</span>
+            <strong id="idealRange">-- km</strong>
+          </article>
+          <article>
+            <span>车内</span>
+            <strong id="insideTemp">--°C</strong>
+          </article>
+          <article>
+            <span>车外</span>
+            <strong id="outsideTemp">--°C</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="right-rail">
+        <article class="map-panel">
+          <div class="panel-head">
+            <div>
+              <h3>当前位置</h3>
+            </div>
+            <a id="mapLink" href="#" target="_blank" rel="noreferrer">打开</a>
+          </div>
+          <div class="map-shell" id="tileMap" aria-label="高德地图">
+            <div class="map-grid" id="mapGrid"></div>
+            <div class="map-marker" id="currentMarker"><span></span></div>
+            <div id="currentMapStatus" class="map-module-state" role="status" hidden></div>
+          </div>
+          <p id="coords" class="muted current-address">位置识别中</p>
+        </article>
+
+        <article class="drive-panel">
+          <h3>最近行程</h3>
+          <div class="route-shell" id="routeMap" aria-label="最近一次行程路线">
+            <div class="map-grid" id="routeGrid"></div>
+            <svg id="routeSvg" preserveAspectRatio="none" aria-hidden="true">
+              <path id="routePath" d=""></path>
+              <g id="routeStartMarker" class="route-endpoint route-start" opacity="0">
+                <circle r="9"></circle>
+                <text y="3.5" text-anchor="middle">起</text>
+              </g>
+              <g id="routeEndMarker" class="route-endpoint route-end" opacity="0">
+                <circle r="9"></circle>
+                <text y="3.5" text-anchor="middle">终</text>
+              </g>
+            </svg>
+            <div id="routeMapStatus" class="map-module-state" role="status" hidden></div>
+          </div>
+          <div class="drive-numbers">
+            <div>
+              <span>距离</span>
+              <strong id="driveDistance">-- km</strong>
+            </div>
+            <div>
+              <span>用时</span>
+              <strong id="driveDuration">-- 分钟</strong>
+            </div>
+          </div>
+          <p id="driveTime" class="muted">暂无行程时间</p>
+          <p id="driveAddress" class="muted"></p>
+        </article>
+      </section>
+    </main>
+
+    <main id="detailView" class="detail-shell" hidden>
+      <header class="detail-topbar">
+        <button id="detailMenuTrigger" class="icon-button detail-menu-trigger" type="button" aria-label="打开车辆数据菜单" title="打开菜单">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="detail-heading">
+          <p id="detailEyebrow">Model S</p>
+          <h1 id="detailTitle">行程</h1>
+          <span id="detailDescription">行程记录与单次详情</span>
+        </div>
+        <div class="detail-actions">
+          <span id="detailUpdatedAt" class="detail-sync-status" role="status">--</span>
+          <button id="detailRefresh" class="detail-refresh-button icon-command" type="button" aria-label="刷新当前页面数据" title="刷新数据"><span aria-hidden="true">↻</span></button>
+          <a class="detail-home-link" href="/" data-route="/">主页</a>
+        </div>
+      </header>
+
+      <section id="rangeToolbar" class="range-toolbar" aria-label="时间范围">
+        <div class="range-segmented" role="group" aria-label="选择时间范围">
+          <button type="button" data-range="today" aria-pressed="false">今天</button>
+          <button type="button" data-range="7d" aria-pressed="false">最近 7 天</button>
+          <button type="button" data-range="30d" aria-pressed="true">最近 30 天</button>
+          <button type="button" data-range="month" aria-pressed="false">本月</button>
+          <button type="button" data-range="year" aria-pressed="false">本年</button>
+          <button type="button" data-range="custom" aria-pressed="false">自定义</button>
+        </div>
+        <div id="customRange" class="custom-range" hidden>
+          <label>开始日期<input id="rangeStart" type="date"></label>
+          <span>至</span>
+          <label>结束日期<input id="rangeEnd" type="date"></label>
+        </div>
+      </section>
+
+      <section id="detailContent" class="detail-content" aria-live="polite">
+        <div id="detailPlaceholder" class="detail-placeholder">
+          <div class="detail-state-mark" aria-hidden="true"></div>
+          <h2>数据视图已准备</h2>
+          <p id="detailStatus">详细内容将在后续阶段接入。</p>
+          <button id="detailRetry" class="detail-retry-button" type="button" hidden>重新加载</button>
+          <div class="detail-skeleton" aria-hidden="true">
+            <div class="detail-skeleton-summary"><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="detail-skeleton-workspace">
+              <div class="detail-skeleton-list"><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="detail-skeleton-canvas"><i></i><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tripsView" class="trips-view" hidden>
+          <section id="tripSummary" class="trip-summary" aria-label="行程汇总"></section>
+          <div class="trips-workspace">
+            <section class="trip-list-panel">
+              <header><h2>行程记录</h2><span id="tripListCount">0 条</span></header>
+              <div id="tripList" class="trip-list"></div>
+            </section>
+            <section class="trip-detail-panel">
+              <header class="trip-detail-header">
+                <div><span>单次行程</span><h2 id="tripDetailTitle">请选择一条行程</h2></div>
+                <strong id="tripDetailTime">--</strong>
+              </header>
+              <div id="tripDetailMap" class="trip-detail-map">
+                <div id="tripDetailGrid" class="trip-detail-grid"></div>
+                <svg id="tripDetailSvg" aria-hidden="true"><path id="tripDetailPath"></path><g id="tripDetailStart" class="trip-map-marker trip-map-start"><circle r="9"></circle><text y="3.5" text-anchor="middle">起</text></g><g id="tripDetailEnd" class="trip-map-marker trip-map-end"><circle r="9"></circle><text y="3.5" text-anchor="middle">终</text></g></svg>
+                <div id="tripMapLoading" class="trip-map-loading">正在载入路线</div>
+              </div>
+              <div id="tripDetailMetrics" class="trip-detail-metrics"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="chargingView" class="trips-view charging-view" hidden>
+          <section id="chargingSummary" class="trip-summary" aria-label="充电汇总"></section>
+          <div class="trips-workspace">
+            <section class="trip-list-panel">
+              <header><h2>充电记录</h2><span id="chargingListCount">0 条</span></header>
+              <div id="chargingList" class="trip-list"></div>
+            </section>
+            <section class="trip-detail-panel charging-detail-panel">
+              <header class="trip-detail-header">
+                <div><span>单次充电</span><h2 id="chargingDetailTitle">请选择一条记录</h2></div>
+                <strong id="chargingDetailTime">--</strong>
+              </header>
+              <div class="charging-chart-shell">
+                <div class="charging-chart-legend"><span><i class="soc-dot"></i>电量</span><span><i class="power-dot"></i>功率</span></div>
+                <svg id="chargingChart" viewBox="0 0 800 360" aria-label="单次充电曲线">
+                  <g id="chargingGrid" class="charging-grid"></g>
+                  <path id="chargingSocArea" class="charging-soc-area"></path>
+                  <path id="chargingSocLine" class="charging-soc-line"></path>
+                  <path id="chargingPowerLine" class="charging-power-line"></path>
+                </svg>
+                <div id="chargingChartEmpty" class="trip-map-loading">正在载入充电曲线</div>
+              </div>
+              <div id="chargingDetailMetrics" class="trip-detail-metrics charging-detail-metrics"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="energyView" class="trips-view energy-detail-view" hidden>
+          <section id="energySummary" class="trip-summary" aria-label="能耗汇总"></section>
+          <section class="energy-detail-chart-panel">
+            <header class="energy-detail-chart-header">
+              <div><span>每日趋势</span><h2>纯消耗与平均能耗</h2></div>
+              <div class="charging-chart-legend"><span><i class="soc-dot"></i>平均能耗</span><span><i class="energy-bar-dot"></i>纯消耗</span></div>
+            </header>
+            <div class="energy-detail-chart-shell">
+              <svg id="energyDetailChart" viewBox="0 0 1000 330" aria-label="每日能耗趋势">
+                <g id="energyDetailGrid" class="charging-grid"></g>
+                <g id="energyDetailBars" class="energy-detail-bars"></g>
+                <path id="energyDetailLine" class="charging-soc-line"></path>
+                <g id="energyDetailDots" class="energy-detail-dots"></g>
+              </svg>
+              <div id="energyDetailEmpty" class="trip-map-loading">正在载入能耗趋势</div>
+            </div>
+          </section>
+          <div class="energy-days-layout">
+            <section class="trip-list-panel energy-days-panel">
+              <header><h2>每日记录</h2><span id="energyDayCount">0 天</span></header>
+              <div id="energyDayList" class="trip-list"></div>
+            </section>
+            <section class="energy-day-detail">
+              <header class="trip-detail-header"><div><span>当日详情</span><h2 id="energyDayTitle">请选择一天</h2></div></header>
+              <div id="energyDayMetrics" class="energy-day-metrics"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="batteryView" class="trips-view energy-detail-view battery-detail-view" hidden>
+          <section id="batterySummary" class="trip-summary" aria-label="电池数据汇总"></section>
+          <section class="energy-detail-chart-panel">
+            <header class="energy-detail-chart-header">
+              <div><span>电量历史</span><h2>每日电量区间与结束电量</h2></div>
+              <div class="charging-chart-legend"><span><i class="soc-dot"></i>结束电量</span><span><i class="battery-range-dot"></i>最高 / 最低</span></div>
+            </header>
+            <div class="energy-detail-chart-shell">
+              <svg id="batteryDetailChart" viewBox="0 0 1000 330" aria-label="每日电量趋势">
+                <g id="batteryDetailGrid" class="charging-grid"></g>
+                <g id="batteryDetailRanges" class="battery-detail-ranges"></g>
+                <path id="batteryDetailLine" class="charging-soc-line"></path>
+                <g id="batteryDetailDots" class="energy-detail-dots"></g>
+              </svg>
+              <div id="batteryDetailEmpty" class="trip-map-loading">正在载入电量历史</div>
+            </div>
+          </section>
+          <div class="energy-days-layout">
+            <section class="trip-list-panel energy-days-panel">
+              <header><h2>每日记录</h2><span id="batteryDayCount">0 天</span></header>
+              <div id="batteryDayList" class="trip-list"></div>
+            </section>
+            <section class="energy-day-detail">
+              <header class="trip-detail-header"><div><span>当日详情</span><h2 id="batteryDayTitle">请选择一天</h2></div></header>
+              <div id="batteryDayMetrics" class="energy-day-metrics"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="statusView" class="trips-view status-detail-view" hidden>
+          <section id="statusSummary" class="trip-summary status-summary" aria-label="状态汇总"></section>
+          <section class="status-distribution-panel">
+            <header class="energy-detail-chart-header"><div><span>时间构成</span><h2>车辆状态分布</h2></div></header>
+            <div id="statusDistribution" class="status-distribution"></div>
+            <div id="statusLegend" class="status-legend"></div>
+          </section>
+          <div class="energy-days-layout status-events-layout">
+            <section class="trip-list-panel status-list-panel">
+              <header><h2>状态时间线</h2><span id="statusEventCount">0 段</span></header>
+              <div id="statusEventList" class="trip-list"></div>
+            </section>
+            <section class="energy-day-detail status-event-detail">
+              <header class="trip-detail-header"><div><span>状态详情</span><h2 id="statusEventTitle">请选择一段状态</h2></div></header>
+              <div id="statusEventMetrics" class="energy-day-metrics status-event-metrics"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="statisticsView" class="trips-view statistics-detail-view" hidden>
+          <section id="statisticsSummary" class="trip-summary statistics-summary" aria-label="统计汇总"></section>
+          <section class="energy-detail-chart-panel statistics-chart-panel">
+            <header class="energy-detail-chart-header">
+              <div><span>每日表现</span><h2>里程与平均能耗</h2></div>
+              <div class="charging-chart-legend"><span><i class="soc-dot"></i>平均能耗</span><span><i class="statistics-distance-dot"></i>行驶里程</span></div>
+            </header>
+            <div class="energy-detail-chart-shell">
+              <svg id="statisticsChart" viewBox="0 0 1000 330" aria-label="每日里程与平均能耗趋势">
+                <g id="statisticsGrid" class="charging-grid"></g>
+                <g id="statisticsBars" class="statistics-bars"></g>
+                <path id="statisticsLine" class="charging-soc-line"></path>
+                <g id="statisticsDots" class="energy-detail-dots"></g>
+              </svg>
+              <div id="statisticsChartEmpty" class="trip-map-loading">正在载入统计趋势</div>
+            </div>
+          </section>
+          <div class="statistics-bottom-grid">
+            <section class="status-distribution-panel statistics-state-panel">
+              <header class="energy-detail-chart-header"><div><span>车辆状态</span><h2>时间构成</h2></div></header>
+              <div id="statisticsStateDistribution" class="status-distribution"></div>
+              <div id="statisticsStateLegend" class="status-legend"></div>
+            </section>
+            <section class="statistics-breakdown-panel">
+              <header class="energy-detail-chart-header"><div><span>能源摘要</span><h2>消耗、回收与补能</h2></div></header>
+              <div id="statisticsBreakdown" class="statistics-breakdown"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="settingsView" class="trips-view settings-detail-view" hidden>
+          <div class="settings-grid">
+            <section class="settings-panel settings-runtime-panel">
+              <header><div><span>系统状态</span><h2>服务与数据源</h2></div><span id="settingsOverallStatus" class="settings-status-pill">检查中</span></header>
+              <div id="settingsRuntime" class="settings-runtime"></div>
+            </section>
+            <section class="settings-panel">
+              <header><div><span>刷新策略</span><h2>响应与缓存</h2></div></header>
+              <div id="settingsRefresh" class="settings-runtime"></div>
+            </section>
+            <section class="settings-panel settings-security-panel">
+              <header><div><span>账户安全</span><h2>登录保护</h2></div></header>
+              <div id="settingsSecurity" class="settings-runtime"></div>
+            </section>
+            <section class="settings-panel settings-quality-panel">
+              <header><div><span>数据质量</span><h2>异常记录检查</h2></div><span id="settingsQualityStatus" class="settings-status-pill">检查中</span></header>
+              <div id="settingsQuality" class="settings-quality"></div>
+            </section>
+            <section class="settings-panel settings-password-panel">
+              <header><div><span>访问密码</span><h2>修改密码</h2></div></header>
+              <form id="passwordForm" class="settings-password-form">
+                <label>当前密码<input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required></label>
+                <label>新密码<input id="newPassword" name="newPassword" type="password" autocomplete="new-password" minlength="10" maxlength="128" required></label>
+                <label>确认新密码<input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="10" maxlength="128" required></label>
+                <div class="settings-password-actions"><p id="passwordStatus" role="status">修改成功后需要重新登录。</p><button id="passwordSubmit" type="submit">更新密码</button></div>
+              </form>
+            </section>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+  <script src="/app.js?v=apple-20260814-25"></script>
+  <script src="/shell.js?v=apple-20260814-25"></script>
+  </body>
+</html>

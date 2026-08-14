@@ -1,0 +1,21 @@
+# Runtime configuration and credentials
+config.json
+address-cache.json
+.env
+.env.*
+!.env.example
+
+# Runtime output
+*.log
+*.err.log
+*.tmp
+*.bak
+address-cache.json.*.bak
+address-cache.json.*.tmp
+node_modules/
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

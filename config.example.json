@@ -1,0 +1,10 @@
+{
+  "grafanaUrl": "http://localhost:3000",
+  "grafanaToken": "paste-service-account-token-here",
+  "datasourceUid": "paste-datasource-uid-here",
+  "datasourceType": "grafana-postgresql-datasource",
+  "amapWebServiceKey": "paste-amap-web-service-key-here",
+  "sitePasswordHash": "pbkdf2_sha256:210000:generated-salt:generated-hash",
+  "sessionSecret": "generate-a-long-random-secret",
+  "cookieSecure": false
+}

@@ -1,0 +1,4406 @@
+﻿:root {
+  color-scheme: light;
+  --bg: #f5f5f7;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-solid: #ffffff;
+  --line: rgba(0, 0, 0, 0.08);
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --soft: #e8e8ed;
+  --accent: #007aff;
+  --accent-2: #34c759;
+  --warn: #ff9f0a;
+  --danger: #ff3b30;
+  --radius-xl: 30px;
+  --radius-lg: 24px;
+  --radius-md: 20px;
+  --radius-sm: 15px;
+  --space-page: 24px;
+  --space-col: 20px;
+  --space-card: 16px;
+  --card-pad: 18px;
+  --label-size: 13px;
+  --label-weight: 620;
+  --value-weight: 760;
+  --shadow: 0 22px 58px rgba(28, 39, 58, 0.11);
+  --shadow-soft: 0 12px 34px rgba(28, 39, 58, 0.075);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1180px;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(0, 122, 255, 0.12), transparent 28rem),
+    radial-gradient(circle at 88% 18%, rgba(170, 185, 205, 0.16), transparent 25rem),
+    linear-gradient(135deg, #fbfbfd 0%, #f3f4f8 46%, #eceef3 100%);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+.cockpit {
+  display: grid;
+  grid-template-columns: 304px minmax(520px, 1fr) 392px;
+  gap: var(--space-col);
+  width: 100vw;
+  height: 100vh;
+  padding: var(--space-page);
+}
+
+.left-rail,
+.right-rail {
+  display: grid;
+  align-content: start;
+  gap: var(--space-card);
+  min-height: 0;
+  contain: layout style;
+}
+
+.left-rail {
+  grid-template-rows: 80px repeat(5, minmax(0, 1fr));
+  align-content: stretch;
+}
+
+.right-rail {
+  grid-template-rows: minmax(0, 0.92fr) minmax(0, 1.18fr);
+  align-content: stretch;
+}
+
+.identity,
+.tesla-logo-card,
+.status-block,
+.metric-stack article,
+.map-panel,
+.drive-panel,
+.bottom-metrics article,
+.hero-stat,
+.battery-panel,
+.energy-chart-card,
+.vehicle-card,
+.car-stage {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: saturate(160%) blur(26px);
+  box-shadow: var(--shadow-soft), var(--glass-highlight);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.identity {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+}
+
+.tesla-mark {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #1d1d1f, #3a3a3c);
+  color: white;
+  font-size: 29px;
+  font-weight: 700;
+  box-shadow: 0 10px 28px rgba(29, 29, 31, 0.24);
+}
+
+.tesla-logo-card {
+  display: grid;
+  place-items: center;
+  min-height: 80px;
+  padding: 14px 22px;
+  border-radius: var(--radius-lg);
+}
+
+.tesla-wordmark {
+  display: block;
+  width: min(88%, 232px);
+  height: auto;
+  object-fit: contain;
+  transform: translate(-2px, 1px);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  margin-top: 4px;
+  font-size: 24px;
+  line-height: 1.08;
+  font-weight: 700;
+}
+
+h2 {
+  margin-top: 2px;
+  font-size: 36px;
+  line-height: 1;
+  font-weight: 780;
+}
+
+h3 {
+  margin-top: 3px;
+  font-size: 20px;
+  line-height: 1.1;
+  font-weight: 760;
+}
+
+.eyebrow,
+.label,
+.muted,
+.metric-stack span,
+.bottom-metrics span,
+.drive-numbers span {
+  color: var(--muted);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  line-height: 1.25;
+}
+
+.status-block {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-content: stretch;
+  padding: var(--card-pad);
+  border-radius: var(--radius-lg);
+}
+
+.state-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: center;
+  margin: 0;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: capitalize;
+}
+
+.state-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--warn);
+  box-shadow: 0 0 0 7px rgba(255, 159, 10, 0.13);
+}
+
+.state-dot[data-state="online"] {
+  background: var(--accent-2);
+  box-shadow: 0 0 0 7px rgba(52, 199, 89, 0.14);
+}
+
+.state-dot[data-state="driving"] {
+  background: var(--accent);
+  box-shadow: 0 0 0 7px rgba(0, 122, 255, 0.14);
+}
+
+.state-dot[data-state="charging"] {
+  background: var(--warn);
+  box-shadow: 0 0 0 7px rgba(255, 159, 10, 0.14);
+}
+
+.state-dot[data-state="updating"] {
+  background: var(--warn);
+  box-shadow: 0 0 0 7px rgba(255, 159, 10, 0.13);
+}
+
+.state-dot[data-state="asleep"] {
+  background: #8e8e93;
+  box-shadow: 0 0 0 7px rgba(142, 142, 147, 0.14);
+}
+
+.state-dot[data-state="offline"] {
+  background: var(--danger);
+  box-shadow: 0 0 0 7px rgba(255, 59, 48, 0.13);
+}
+
+.metric-stack {
+  display: contents;
+}
+
+.metric-stack article,
+.bottom-metrics article {
+  display: grid;
+  gap: 10px;
+  padding: var(--card-pad);
+  border-radius: var(--radius-md);
+}
+
+.metric-stack article {
+  grid-template-rows: auto 1fr;
+  align-content: stretch;
+  min-height: 0;
+}
+
+.metric-stack article strong {
+  align-self: center;
+}
+
+.today-drive-card {
+  grid-template-rows: auto 1fr auto;
+}
+
+.today-drive-details {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(60, 60, 67, 0.07);
+}
+
+.today-drive-details span,
+.today-empty {
+  margin: 0;
+  color: rgba(60, 60, 67, 0.52);
+  font-size: 11px;
+  font-weight: 570;
+  line-height: 1.2;
+}
+
+.today-drive-details b {
+  color: rgba(29, 29, 31, 0.78);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Make today's duration and consumption read as two compact metrics. */
+.metric-stack .today-drive-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.metric-stack .today-drive-details span {
+  display: grid;
+  gap: 3px;
+  color: rgba(60, 60, 67, 0.52);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.metric-stack .today-drive-details b {
+  color: rgba(29, 29, 31, 0.82);
+  font-size: 13px;
+  font-weight: 720;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Tighter daily summary and a single label language across all metrics. */
+.today-drive-card {
+  grid-template-rows: auto 1fr auto;
+}
+
+.today-drive-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.metric-stack .today-drive-details span {
+  display: grid;
+  gap: 3px;
+  color: rgba(60, 60, 67, 0.54);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.today-drive-details b {
+  color: rgba(29, 29, 31, 0.82);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.metric-stack > article > span,
+.hero-stat > span,
+.bottom-metrics > article > span,
+.drive-numbers > div > span {
+  color: rgba(60, 60, 67, 0.60);
+  font-weight: 600;
+}
+
+.metric-stack strong {
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: var(--value-weight);
+}
+
+.car-stage {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-card);
+  min-height: 0;
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.car-stage::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.top-bar,
+.panel-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.top-bar {
+  align-items: center;
+  min-height: 40px;
+}
+
+time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hero-dashboard {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(174px, 0.92fr) minmax(134px, 0.72fr) minmax(106px, 0.56fr);
+  align-content: stretch;
+  gap: var(--space-card);
+  min-height: 0;
+}
+
+.hero-stat,
+.vehicle-card,
+.battery-panel,
+.energy-chart-card {
+  border-radius: var(--radius-lg);
+}
+
+.hero-stat {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  align-content: stretch;
+  padding: var(--card-pad);
+}
+
+.hero-stat span,
+.hero-stat small {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 560;
+}
+
+.hero-stat small {
+  display: none;
+}
+
+.hero-stat strong {
+  align-self: center;
+  font-size: clamp(31px, 3.2vw, 52px);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  font-weight: var(--value-weight);
+}
+
+.battery-panel {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  grid-template-rows: auto auto minmax(44px, 1fr) auto;
+  gap: 10px;
+  min-height: 0;
+  padding: var(--card-pad);
+  overflow: hidden;
+}
+
+.battery-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.battery-panel-head > span:first-child {
+  color: var(--muted);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+}
+
+.battery-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 6px 11px;
+  border: 1px solid rgba(80, 96, 121, 0.16);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.battery-badge::before {
+  content: "\26A1";
+  color: var(--accent);
+  font-size: 18px;
+}
+
+.battery-panel strong#mainBattery {
+  color: var(--accent);
+  font-size: clamp(42px, 4vw, 60px);
+  line-height: 0.86;
+  letter-spacing: -0.07em;
+  font-weight: 780;
+}
+
+.battery-pack {
+  position: relative;
+  align-self: stretch;
+  min-height: 42px;
+  padding: 7px 16px 7px 7px;
+  border: 2px solid rgba(80, 96, 121, 0.26);
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(236, 241, 249, 0.58));
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.92),
+    inset 0 -8px 18px rgba(30, 45, 70, 0.08),
+    0 10px 24px rgba(45, 62, 88, 0.10);
+}
+
+.battery-tip {
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  width: 12px;
+  height: 28px;
+  transform: translateY(-50%);
+  border: 2px solid rgba(80, 96, 121, 0.24);
+  border-left: 0;
+  border-radius: 0 9px 9px 0;
+  background: linear-gradient(180deg, #ffffff, #e7ebf2);
+  box-shadow: inset 0 0 7px rgba(30, 45, 70, 0.11);
+}
+
+.battery-segments {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  height: 100%;
+  min-height: 28px;
+}
+
+.battery-segment {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(80, 96, 121, 0.10);
+  border-radius: 7px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(238, 242, 248, 0.78));
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.78),
+    inset 0 -2px 5px rgba(30, 45, 70, 0.08),
+    0 2px 5px rgba(30, 45, 70, 0.06);
+}
+
+.battery-segment::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: var(--fill, 0%);
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(112, 185, 255, 0.94), rgba(0, 102, 255, 0.98));
+  box-shadow:
+    inset 0 2px 5px rgba(255, 255, 255, 0.48),
+    0 0 12px rgba(0, 122, 255, 0.28);
+}
+
+.battery-advice {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #61708a;
+  font-size: 12px;
+  font-weight: 660;
+}
+
+.battery-advice-icon {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--danger);
+  font-size: 12px;
+}
+
+#batteryAdviceStatus {
+  color: var(--danger);
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+.battery-advice span:nth-child(3) {
+  width: 1px;
+  height: 20px;
+  background: rgba(80, 96, 121, 0.18);
+}
+
+.vehicle-card {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.vehicle-card::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.11), transparent 64%);
+}
+
+.energy-chart-card {
+  position: relative;
+  grid-column: 1 / span 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  min-height: 0;
+  padding: var(--card-pad);
+  overflow: hidden;
+}
+
+.energy-chart-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.energy-chart-head span,
+.energy-chart-head small {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 560;
+}
+
+.energy-chart-head strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 20px;
+  line-height: 1.05;
+  font-weight: 760;
+}
+
+.energy-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.energy-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border: 1px solid rgba(60, 60, 67, 0.10);
+  border-radius: 999px;
+  background: rgba(235, 237, 242, 0.68);
+}
+
+.energy-mode {
+  min-height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(60, 60, 67, 0.58);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 680;
+  cursor: pointer;
+}
+
+.energy-mode[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.92);
+  color: #206fda;
+  box-shadow: 0 1px 3px rgba(24, 36, 52, 0.10);
+}
+
+.energy-chart {
+  width: 100%;
+  height: 100%;
+  min-height: 66px;
+  overflow: visible;
+}
+
+#energyArea {
+  fill: rgba(0, 122, 255, 0.12);
+}
+
+#energyLine {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 7px 10px rgba(0, 122, 255, 0.22));
+}
+
+.energy-hover {
+  pointer-events: none;
+  transition: opacity 140ms ease;
+}
+
+#energyHoverLine {
+  stroke: rgba(0, 122, 255, 0.22);
+  stroke-width: 2;
+  stroke-dasharray: 4 5;
+}
+
+#energyHoverDot {
+  fill: #ffffff;
+  stroke: var(--accent);
+  stroke-width: 4;
+  filter: drop-shadow(0 5px 8px rgba(0, 122, 255, 0.28));
+}
+
+#energyHoverBubble {
+  display: none;
+}
+
+#energyHoverBubbleBg {
+  fill: rgba(255, 255, 255, 0.92);
+  stroke: rgba(0, 122, 255, 0.18);
+  stroke-width: 1;
+  filter: drop-shadow(0 8px 16px rgba(30, 45, 70, 0.16));
+}
+
+#energyHoverText {
+  fill: #1d1d1f;
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.energy-hover-tooltip {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  min-width: 112px;
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 122, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1d1d1f;
+  box-shadow: 0 8px 18px rgba(30, 45, 70, 0.14);
+  font-size: 13px;
+  font-weight: 720;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  transition: opacity 120ms ease;
+}
+
+.energy-hover-tooltip[data-visible="true"] {
+  opacity: 1;
+}
+
+/* Focused Apple-style battery and energy treatment. */
+.battery-panel {
+  grid-template-rows: auto minmax(34px, 1fr) minmax(42px, 0.8fr) auto;
+  gap: 7px;
+}
+
+.battery-panel-head {
+  align-items: center;
+}
+
+.battery-panel strong#mainBattery {
+  align-self: end;
+  font-size: clamp(54px, 4.8vw, 76px);
+  line-height: 0.78;
+  letter-spacing: -0.085em;
+}
+
+.battery-badge {
+  min-height: 28px;
+  padding: 5px 10px;
+  border-color: rgba(0, 122, 255, 0.17);
+  background: rgba(248, 251, 255, 0.78);
+  color: #52627d;
+  font-size: 11px;
+}
+
+.battery-badge::before {
+  font-size: 15px;
+}
+
+.battery-pack {
+  min-height: 40px;
+  padding: 5px 14px 5px 5px;
+  border-radius: 20px;
+}
+
+.battery-tip {
+  right: -9px;
+  width: 11px;
+  height: 22px;
+}
+
+.battery-segments {
+  gap: 3px;
+  min-height: 24px;
+}
+
+.battery-segment {
+  border-radius: 5px;
+}
+
+.battery-advice {
+  gap: 6px;
+  min-height: 20px;
+  color: #6b778c;
+  font-size: 11px;
+}
+
+.battery-advice-icon {
+  width: 18px;
+  height: 18px;
+  border-width: 1.5px;
+  font-size: 10px;
+}
+
+#batteryAdviceStatus {
+  font-size: 12px;
+}
+
+.energy-chart-card {
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 4px;
+  padding: 16px 19px 14px;
+}
+
+.energy-chart-head {
+  align-items: center;
+}
+
+.energy-chart-head strong {
+  margin: 0;
+  font-size: 19px;
+}
+
+.energy-chart-head span {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+.energy-average {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid rgba(0, 122, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(248, 251, 255, 0.7);
+}
+
+.energy-average em {
+  color: rgba(60, 60, 67, 0.54);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 650;
+}
+
+.energy-average b {
+  color: #206fda;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.energy-chart {
+  min-height: 76px;
+}
+
+#energyArea {
+  fill: url(#energyFade);
+}
+
+#energyLine {
+  stroke-width: 3.6;
+}
+
+.energy-extrema circle {
+  fill: #ffffff;
+  stroke: #0a84ff;
+  stroke-width: 3;
+}
+
+.energy-extrema rect {
+  fill: rgba(255, 255, 255, 0.95);
+  stroke: rgba(10, 132, 255, 0.2);
+  stroke-width: 1;
+  filter: drop-shadow(0 5px 10px rgba(34, 64, 105, 0.10));
+}
+
+.energy-extrema text {
+  fill: #3d4b61;
+  font-size: 10px;
+  font-weight: 720;
+}
+
+/* Unified vehicle module and readable energy plot. */
+.hero-dashboard {
+  grid-template-rows: minmax(196px, 1.1fr) minmax(184px, 1fr) minmax(72px, 0.36fr);
+}
+
+.hero-vehicle-panel {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 18px;
+  min-height: 0;
+  padding: 20px 22px 18px;
+  border: 1px solid rgba(60, 60, 67, 0.08);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 78% 40%, rgba(0, 122, 255, 0.10), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.48));
+  box-shadow: var(--shadow-soft), var(--glass-highlight);
+  overflow: hidden;
+}
+
+.hero-vehicle-panel .battery-panel,
+.hero-vehicle-panel .vehicle-card {
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hero-vehicle-panel .battery-panel {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 2px 12px 2px 1px;
+  border-right: 1px solid rgba(60, 60, 67, 0.09);
+}
+
+.hero-vehicle-panel .vehicle-card {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 2px 0 2px 4px;
+}
+
+.hero-vehicle-panel .vehicle-card::before {
+  inset: -12px -8px -18px;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.12), transparent 67%);
+}
+
+.hero-vehicle-panel .model-s-illustration {
+  width: min(106%, 660px);
+  max-height: 178px;
+  transform: translate(2%, 4px);
+}
+
+.energy-chart-card {
+  grid-row: 2;
+  padding: 17px 22px 14px;
+}
+
+.energy-plot {
+  position: relative;
+  min-height: 0;
+  padding: 4px 38px 0 0;
+}
+
+.energy-plot .energy-chart {
+  position: absolute;
+  inset: 0 38px 0 0;
+  width: calc(100% - 38px);
+  height: 100%;
+  min-height: 0;
+}
+
+.energy-grid line {
+  stroke: rgba(60, 60, 67, 0.11);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.energy-axis-label {
+  position: absolute;
+  right: 0;
+  color: rgba(60, 60, 67, 0.56);
+  font-size: 11px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.energy-axis-high { top: 10%; }
+.energy-axis-mid { top: 50%; transform: translateY(-50%); }
+.energy-axis-low { bottom: 9%; }
+
+.energy-point-label {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-height: 21px;
+  padding: 3px 8px;
+  border: 1px solid rgba(0, 122, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #46546b;
+  box-shadow: 0 5px 12px rgba(34, 64, 105, 0.10);
+  font-size: 10px;
+  font-weight: 720;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, -125%);
+  transition: opacity 160ms ease;
+}
+
+.energy-point-label[data-placement="below"] {
+  transform: translate(-50%, 10px);
+}
+
+.energy-point-label[data-anchor="above"] {
+  transform: translate(-50%, calc(-100% - 8px));
+}
+
+.energy-point-label[data-anchor="above-far"] {
+  transform: translate(-50%, calc(-100% - 28px));
+}
+
+.energy-point-label[data-anchor="below"] {
+  transform: translate(-50%, 8px);
+}
+
+.energy-point-label[data-anchor="left"] {
+  transform: translate(calc(-100% - 8px), -50%);
+}
+
+.energy-point-label[data-anchor="right"] {
+  transform: translate(8px, -50%);
+}
+
+.energy-point-label[data-anchor="left-above"] {
+  transform: translate(calc(-100% - 8px), calc(-100% - 8px));
+}
+
+.energy-point-label[data-anchor="left-below"] {
+  transform: translate(calc(-100% - 8px), 8px);
+}
+
+/* Only short desktop windows switch to a scroll-safe layout. */
+@media (max-height: 820px) {
+  body {
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .cockpit {
+    height: auto;
+    min-height: 800px;
+    align-items: start;
+  }
+
+  .left-rail,
+  .right-rail,
+  .car-stage {
+    height: 752px;
+  }
+
+  .car-stage {
+    grid-template-rows: auto auto auto;
+    align-content: start;
+    overflow: visible;
+  }
+
+  .hero-dashboard {
+    grid-template-rows: 206px 210px 80px;
+    align-content: start;
+  }
+
+  .bottom-metrics {
+    min-height: 86px;
+  }
+}
+
+.energy-hover-tooltip {
+  z-index: 4;
+}
+
+.month-time,
+.month-distance {
+  padding: 15px 19px;
+}
+
+.month-time strong,
+.month-distance strong {
+  align-self: end;
+  font-size: clamp(22px, 1.82vw, 30px);
+}
+
+/* Effect-reference proportions and chart axes. */
+.hero-vehicle-panel {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 22px;
+}
+
+.hero-vehicle-panel .battery-panel {
+  padding-right: 20px;
+}
+
+.hero-vehicle-panel .vehicle-card {
+  place-items: end center;
+  padding: 0 0 0 12px;
+}
+
+.hero-vehicle-panel .model-s-illustration {
+  width: min(108%, 760px);
+  max-height: 182px;
+  transform: translate(1%, 16px);
+}
+
+.energy-plot {
+  padding: 4px 48px 22px 0;
+}
+
+.energy-plot .energy-chart {
+  inset: 0 48px 22px 0;
+  width: calc(100% - 48px);
+  height: calc(100% - 22px);
+}
+
+.energy-axis-label {
+  right: 1px;
+  min-width: 28px;
+  color: #206fda;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.energy-axis-high { top: 7%; }
+.energy-axis-mid { top: 46%; }
+.energy-axis-low { bottom: 25px; }
+
+.energy-x-label {
+  position: absolute;
+  bottom: 1px;
+  color: rgba(60, 60, 67, 0.52);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.energy-x-start { left: 15px; }
+.energy-x-middle { left: 50%; transform: translateX(-50%); }
+.energy-x-end { right: 50px; }
+
+.energy-point-label {
+  min-height: 28px;
+  padding: 6px 9px;
+  border-color: rgba(0, 122, 255, 0.12);
+  background: rgba(248, 251, 255, 0.88);
+  color: #206fda;
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+/* Reference chart axes: left Wh/km scale, historical distance across the bottom. */
+.energy-plot {
+  padding: 4px 0 24px 42px;
+}
+
+.energy-plot .energy-chart {
+  inset: 0 0 24px 0;
+  width: 100%;
+  height: calc(100% - 24px);
+}
+
+.energy-axis-unit {
+  position: absolute;
+  top: 1px;
+  left: 0;
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.energy-axis-label {
+  right: auto;
+  left: 0;
+  min-width: 28px;
+  box-sizing: border-box;
+  color: rgba(60, 60, 67, 0.56);
+  font-size: 10px;
+  font-weight: 650;
+  text-align: right;
+}
+
+.energy-axis-high { top: 9%; }
+.energy-axis-upper { top: 30%; }
+.energy-axis-mid { top: 50%; }
+.energy-axis-lower { top: 70%; }
+.energy-axis-low { bottom: 28px; }
+
+.energy-x-label {
+  bottom: 2px;
+  color: rgba(60, 60, 67, 0.56);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.energy-x-start { left: 42px; }
+.energy-x-20 { left: 20%; transform: translateX(-50%); }
+.energy-x-40 { left: 40%; transform: translateX(-50%); }
+.energy-x-60 { left: 60%; transform: translateX(-50%); }
+.energy-x-80 { left: 80%; transform: translateX(-50%); }
+.energy-x-end { right: 0; }
+
+#energyAverageLine {
+  stroke: rgba(10, 132, 255, 0.42);
+  stroke-width: 1.3;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.energy-grid line {
+  stroke: rgba(60, 60, 67, 0.10);
+}
+
+.month-time {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+.month-distance {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.month-time strong,
+.month-distance strong {
+  font-size: clamp(23px, 2.05vw, 35px);
+  letter-spacing: -0.035em;
+  font-weight: 760;
+}
+
+.model-s-illustration {
+  position: relative;
+  z-index: 2;
+  width: min(96%, 620px);
+  max-height: 156px;
+  object-fit: contain;
+  transform: translateY(-4px);
+  pointer-events: none;
+  filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.10));
+}
+
+.model-s-vector {
+  display: none;
+}
+
+.car-ground {
+  fill: rgba(0, 0, 0, 0.12);
+  filter: blur(10px);
+}
+
+.car-window {
+  fill: url(#glassPaint);
+  opacity: 0.96;
+}
+
+.car-glass-cut {
+  fill: rgba(255, 255, 255, 0.12);
+}
+
+.car-body {
+  fill: url(#bodyPaint);
+}
+
+.car-nose {
+  fill: rgba(255, 255, 255, 0.54);
+}
+
+.car-highlight {
+  fill: rgba(255, 255, 255, 0.78);
+}
+
+.car-shoulder {
+  fill: rgba(255, 255, 255, 0.78);
+}
+
+.car-lower {
+  fill: rgba(145, 151, 163, 0.26);
+}
+
+.door-line {
+  fill: none;
+  stroke: rgba(120, 126, 138, 0.34);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.side-sill {
+  fill: none;
+  stroke: rgba(102, 108, 119, 0.32);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.front-light {
+  fill: rgba(0, 122, 255, 0.42);
+}
+
+.rear-light {
+  fill: rgba(255, 59, 48, 0.48);
+}
+
+.wheel {
+  fill: url(#wheelShine);
+}
+
+.wheel-core {
+  fill: #d9dde4;
+  stroke: rgba(255, 255, 255, 0.62);
+  stroke-width: 4;
+}
+
+.bottom-metrics {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-card);
+}
+
+.bottom-metrics strong {
+  align-self: center;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: var(--value-weight);
+  letter-spacing: -0.025em;
+}
+
+.map-panel,
+.drive-panel {
+  display: grid;
+  min-height: 0;
+  padding: var(--card-pad);
+  border-radius: var(--radius-lg);
+}
+
+.map-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.current-address {
+  min-width: 0;
+  margin: 10px 0 0;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.drive-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+}
+
+.panel-head a {
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid rgba(0, 122, 255, 0.16);
+  background: rgba(0, 122, 255, 0.08);
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 760;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.panel-head a:hover {
+  background: rgba(0, 122, 255, 0.12);
+  border-color: rgba(0, 122, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+.panel-head h3,
+.drive-panel > h3 {
+  margin-top: 0;
+  font-size: 22px;
+  letter-spacing: -0.025em;
+}
+
+.map-shell,
+.route-shell {
+  position: relative;
+  margin: 14px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #eef1f4;
+  box-shadow:
+    inset 0 1px 8px rgba(0, 0, 0, 0.04),
+    0 8px 18px rgba(28, 39, 58, 0.055);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.map-shell.is-dragging,
+.route-shell.is-dragging {
+  cursor: grabbing;
+}
+
+.map-shell {
+  height: auto;
+  min-height: 0;
+}
+
+.route-shell {
+  height: auto;
+  min-height: 260px;
+}
+
+.map-grid {
+  position: absolute;
+  inset: 0;
+}
+
+.map-grid img {
+  position: absolute;
+  width: 256px;
+  height: 256px;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.map-shell::after,
+.route-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 42%, rgba(245, 245, 247, 0.16) 78%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.24));
+}
+
+.map-marker {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -100%);
+  border-radius: 50% 50% 50% 4px;
+  rotate: -45deg;
+  background: var(--accent);
+  box-shadow: 0 12px 24px rgba(0, 122, 255, 0.34);
+  z-index: 2;
+}
+
+.map-marker span {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+#routeSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  filter: drop-shadow(0 7px 12px rgba(0, 122, 255, 0.28));
+}
+
+#routePath {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.route-endpoint {
+  pointer-events: none;
+}
+
+.route-endpoint circle {
+  vector-effect: non-scaling-stroke;
+}
+
+.route-endpoint text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-size: 10px;
+  font-weight: 720;
+  pointer-events: none;
+}
+
+.route-start circle {
+  fill: rgba(255, 255, 255, 0.94);
+  stroke: rgba(10, 132, 255, 0.72);
+  stroke-width: 2;
+}
+
+.route-start text {
+  fill: #0a84ff;
+}
+
+.route-end circle {
+  fill: #0a84ff;
+  stroke: rgba(255, 255, 255, 0.94);
+  stroke-width: 2;
+}
+
+.route-end text {
+  fill: white;
+}
+
+.drive-numbers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-card);
+  margin: 12px 0;
+}
+
+.drive-numbers div {
+  display: grid;
+  gap: 10px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.drive-numbers strong {
+  font-size: 23px;
+  line-height: 1;
+  font-weight: var(--value-weight);
+  letter-spacing: -0.025em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .state-dot {
+    animation: breathe 2.6s ease-in-out infinite;
+  }
+
+  .model-s-illustration {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+/* Keep the same material hierarchy after all component-specific rules. */
+.tesla-logo-card,
+.status-block,
+.metric-stack article,
+.map-panel,
+.drive-panel,
+.bottom-metrics article,
+.energy-chart-card {
+  background: linear-gradient(180deg, var(--surface-card-top), var(--surface-card-bottom));
+  border-color: var(--surface-border);
+  box-shadow: var(--surface-shadow);
+}
+
+.car-stage {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.62));
+  border-color: var(--surface-border);
+  box-shadow: 0 16px 38px rgba(32, 45, 64, 0.065), inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+.bottom-metrics article,
+.drive-numbers div {
+  background: var(--surface-inset);
+  border-color: rgba(60, 60, 67, 0.065);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.map-shell,
+.route-shell {
+  border-color: rgba(60, 60, 67, 0.075);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 7px 16px rgba(32, 45, 64, 0.045);
+}
+
+.today-drive-card {
+  grid-template-rows: auto 1fr auto;
+}
+
+.today-drive-details {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(60, 60, 67, 0.07);
+}
+
+.metric-stack .today-drive-details span,
+.metric-stack .today-empty {
+  margin: 0;
+  color: rgba(60, 60, 67, 0.52);
+  font-size: 11px;
+  font-weight: 570;
+  line-height: 1.2;
+}
+
+.today-drive-details b {
+  color: rgba(29, 29, 31, 0.78);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Exempt formatted values from the generic card-label span rule. */
+.metric-stack strong > .metric-number,
+.hero-stat strong > .metric-number,
+.bottom-metrics strong > .metric-number,
+.drive-numbers strong > .metric-number {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.metric-stack strong > .metric-unit,
+.hero-stat strong > .metric-unit,
+.bottom-metrics strong > .metric-unit,
+.drive-numbers strong > .metric-unit {
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 0.56em;
+  font-weight: 640;
+  line-height: 1;
+}
+
+.hero-stat strong > .metric-unit {
+  font-size: 0.48em;
+}
+
+.drive-numbers strong > .metric-unit,
+.bottom-metrics strong > .metric-unit {
+  font-size: 0.60em;
+}
+
+/* Quiet chart scaffolding, with the consumption curve kept as the focal point. */
+.energy-grid line {
+  stroke: rgba(60, 60, 67, 0.060);
+}
+
+.energy-axis-label,
+.energy-axis-unit,
+.energy-x-label {
+  color: rgba(60, 60, 67, 0.42);
+}
+
+#energyLine {
+  stroke: #0a84ff;
+  stroke-width: 3.1;
+  filter: drop-shadow(0 4px 7px rgba(10, 132, 255, 0.12));
+}
+
+#energyArea {
+  fill: rgba(10, 132, 255, 0.060);
+}
+
+/* Numeric hierarchy: stable numerals first, quieter units second. */
+.metric-stack strong,
+.hero-stat strong,
+.bottom-metrics strong,
+.drive-numbers strong {
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.metric-number {
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-unit {
+  display: inline-block;
+  margin-left: 0.22em;
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 0.56em;
+  font-weight: 640;
+  line-height: 1;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.hero-stat .metric-unit {
+  font-size: 0.48em;
+  margin-left: 0.18em;
+}
+
+.hero-stat .metric-number + .metric-unit + .metric-number {
+  margin-left: 0.30em;
+}
+
+.drive-numbers .metric-unit,
+.bottom-metrics .metric-unit {
+  font-size: 0.60em;
+}
+
+/* Refine the battery and vehicle display without changing the dashboard layout. */
+.hero-vehicle-panel .battery-panel {
+  gap: 10px;
+}
+
+.battery-pack {
+  border-color: rgba(95, 105, 125, 0.16);
+  background: rgba(247, 249, 252, 0.78);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.90);
+}
+
+.battery-segment {
+  border-color: rgba(60, 60, 67, 0.08);
+  background: rgba(232, 236, 242, 0.72);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.82);
+}
+
+.battery-segment::before {
+  background: linear-gradient(180deg, #56adff, #0a84ff);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.34);
+}
+
+.battery-advice {
+  gap: 5px;
+  color: rgba(60, 60, 67, 0.62);
+  font-weight: 580;
+}
+
+.battery-advice-icon {
+  display: inline;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  color: var(--accent);
+  font-size: 13px;
+}
+
+#batteryAdviceStatus,
+.battery-advice span:nth-child(3) {
+  display: none;
+}
+
+#batteryAdviceText {
+  color: rgba(60, 60, 67, 0.64);
+}
+
+.hero-vehicle-panel .vehicle-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.60), rgba(255, 255, 255, 0.36));
+}
+
+.hero-vehicle-panel .vehicle-card::before {
+  background: radial-gradient(circle at 52% 72%, rgba(0, 122, 255, 0.045), transparent 62%);
+}
+
+.hero-vehicle-panel .model-s-illustration {
+  opacity: 0.88;
+  filter: drop-shadow(0 11px 15px rgba(24, 36, 52, 0.045));
+}
+
+.hero-vehicle-panel .model-s-illustration {
+  width: min(112%, 790px);
+  max-height: 190px;
+  transform: translate(1%, 22px);
+}
+
+@keyframes model-s-float {
+  0%, 100% { transform: translate(1%, 26px); }
+  50% { transform: translate(1%, 18px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-vehicle-panel .model-s-illustration {
+    animation: model-s-float 6s ease-in-out infinite;
+  }
+}
+
+/* Compact the complete vehicle overview instead of leaving either half empty. */
+.hero-dashboard {
+  grid-template-rows: minmax(200px, 0.90fr) minmax(205px, 1.10fr) minmax(72px, 0.36fr);
+}
+
+.hero-vehicle-panel {
+  padding: 16px 22px;
+}
+
+.hero-vehicle-panel .battery-panel {
+  grid-template-rows: 22px 62px 54px 18px;
+  align-content: center;
+  gap: 8px;
+  padding: 0 20px 0 1px;
+}
+
+.hero-vehicle-panel .battery-panel strong#mainBattery {
+  align-self: center;
+  font-size: clamp(56px, 4.4vw, 72px);
+  line-height: 0.84;
+}
+
+.hero-vehicle-panel .battery-pack {
+  min-height: 50px;
+  align-self: center;
+  display: grid;
+  align-items: center;
+  padding: 5px 7px;
+}
+
+.hero-vehicle-panel .battery-segments {
+  height: 32px;
+  min-height: 32px;
+}
+
+.hero-vehicle-panel .battery-advice {
+  align-self: center;
+  font-size: 11px;
+}
+
+.hero-vehicle-panel .vehicle-card {
+  place-items: center;
+  padding: 0 0 0 12px;
+}
+
+.hero-vehicle-panel .model-s-illustration {
+  width: min(109%, 770px);
+  max-height: 178px;
+  transform: translate(1%, 10px);
+}
+
+@keyframes model-s-float-compact {
+  0%, 100% { transform: translate(1%, 14px); }
+  50% { transform: translate(1%, 6px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-vehicle-panel .model-s-illustration {
+    animation-name: model-s-float-compact;
+  }
+}
+
+/* Let map data remain legible while the geographic base layer stays quiet. */
+.map-grid img {
+  filter: saturate(0.84) brightness(1.02) contrast(0.98);
+  opacity: 0.95;
+}
+
+.map-shell::after,
+.route-shell::after {
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 46%, rgba(248, 249, 252, 0.16) 78%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.14));
+}
+
+#routePath {
+  stroke-width: 4.5;
+  filter: drop-shadow(0 4px 8px rgba(0, 122, 255, 0.20));
+}
+
+.drive-numbers {
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.drive-numbers div {
+  gap: 6px;
+  padding: 12px 14px;
+  border-color: rgba(60, 60, 67, 0.08);
+  background: rgba(255, 255, 255, 0.32);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.drive-numbers strong {
+  font-size: 22px;
+}
+
+/* One surface system: page, card, then inset information. */
+:root {
+  --surface-card-top: rgba(255, 255, 255, 0.82);
+  --surface-card-bottom: rgba(255, 255, 255, 0.56);
+  --surface-inset: rgba(255, 255, 255, 0.40);
+  --surface-border: rgba(60, 60, 67, 0.075);
+  --surface-shadow: 0 10px 28px rgba(32, 45, 64, 0.052), inset 0 1px 0 rgba(255, 255, 255, 0.90);
+}
+
+.tesla-logo-card,
+.status-block,
+.metric-stack article,
+.map-panel,
+.drive-panel,
+.bottom-metrics article,
+.energy-chart-card {
+  background: linear-gradient(180deg, var(--surface-card-top), var(--surface-card-bottom));
+  border-color: var(--surface-border);
+  box-shadow: var(--surface-shadow);
+}
+
+.car-stage {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.62));
+  border-color: var(--surface-border);
+  box-shadow: 0 16px 38px rgba(32, 45, 64, 0.065), inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+.bottom-metrics article,
+.drive-numbers div {
+  background: var(--surface-inset);
+  border-color: rgba(60, 60, 67, 0.065);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.map-shell,
+.route-shell {
+  border-color: rgba(60, 60, 67, 0.075);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 7px 16px rgba(32, 45, 64, 0.045);
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(0.88); opacity: 0.72; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(4px); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Apple-style refinement layer */
+:root {
+  --panel: rgba(255, 255, 255, 0.62);
+  --line: rgba(60, 60, 67, 0.10);
+  --muted: rgba(60, 60, 67, 0.68);
+  --soft: rgba(242, 242, 247, 0.82);
+  --radius-xl: 34px;
+  --radius-lg: 28px;
+  --radius-md: 22px;
+  --space-page: 26px;
+  --space-col: 18px;
+  --space-card: 14px;
+  --card-pad: 19px;
+  --shadow: 0 24px 70px rgba(32, 45, 64, 0.10);
+  --shadow-soft: 0 12px 34px rgba(32, 45, 64, 0.055);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+body {
+  background:
+    radial-gradient(circle at 16% 10%, rgba(0, 122, 255, 0.11), transparent 30rem),
+    radial-gradient(circle at 88% 12%, rgba(120, 152, 190, 0.13), transparent 27rem),
+    linear-gradient(145deg, #fbfbfd 0%, #f4f6fa 47%, #edf0f5 100%);
+}
+
+.cockpit {
+  grid-template-columns: 288px minmax(600px, 1fr) 382px;
+}
+
+.tesla-logo-card,
+.status-block,
+.metric-stack article,
+.map-panel,
+.drive-panel,
+.bottom-metrics article,
+.hero-stat,
+.battery-panel,
+.energy-chart-card,
+.vehicle-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.50));
+  border-color: rgba(60, 60, 67, 0.08);
+  box-shadow: var(--shadow-soft), var(--glass-highlight);
+}
+
+.car-stage {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.50));
+  border-color: rgba(60, 60, 67, 0.08);
+  box-shadow: var(--shadow), var(--glass-highlight);
+}
+
+.car-stage::before {
+  inset: 18px;
+  background:
+    radial-gradient(circle at 62% 24%, rgba(0, 122, 255, 0.11), transparent 30rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0));
+}
+
+.top-bar {
+  min-height: 44px;
+}
+
+h2 {
+  font-size: 35px;
+  font-weight: 760;
+  letter-spacing: -0.035em;
+}
+
+h3 {
+  font-weight: 740;
+  letter-spacing: -0.02em;
+}
+
+.system-strip {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 5px;
+  border: 1px solid rgba(60, 60, 67, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.54);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  backdrop-filter: saturate(180%) blur(22px);
+  white-space: nowrap;
+}
+
+.system-strip span,
+.system-strip time,
+.system-strip a,
+.system-strip .manual-refresh {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(60, 60, 67, 0.72);
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.system-strip span:first-child {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.system-strip a {
+  color: var(--accent);
+  background: rgba(0, 122, 255, 0.08);
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.system-strip a:hover {
+  background: rgba(0, 122, 255, 0.13);
+  transform: translateY(-1px);
+}
+
+.system-strip .manual-refresh {
+  color: var(--accent);
+  background: rgba(0, 122, 255, 0.08);
+  transition: transform 160ms ease, background-color 160ms ease, opacity 160ms ease;
+}
+
+.system-strip .manual-refresh:hover:not(:disabled) {
+  background: rgba(0, 122, 255, 0.13);
+  transform: translateY(-1px);
+}
+
+.system-strip .manual-refresh:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+/* A quiet status line rather than a row of competing pills. */
+.system-strip {
+  gap: 12px;
+  align-self: center;
+  min-height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: translateY(2px);
+}
+
+.system-strip span,
+.system-strip time,
+.system-strip a,
+.system-strip .manual-refresh {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.system-strip #headerState {
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+.system-strip #refreshCadence,
+.system-strip #updatedAt,
+.system-strip .data-freshness {
+  color: rgba(60, 60, 67, 0.56);
+}
+
+.system-strip .data-freshness.is-stale {
+  color: #b25000;
+}
+
+.system-strip .manual-refresh {
+  padding: 4px 8px;
+  color: var(--accent);
+  background: rgba(0, 122, 255, 0.065);
+}
+
+.system-strip a {
+  color: rgba(0, 122, 255, 0.88);
+}
+
+.label,
+.muted,
+.metric-stack span,
+.bottom-metrics span,
+.drive-numbers span,
+.hero-stat span,
+.energy-chart-head span,
+.energy-chart-head small,
+.battery-panel-head > span:first-child {
+  color: rgba(60, 60, 67, 0.66);
+  font-weight: 590;
+}
+
+.state-line,
+.metric-stack strong,
+.bottom-metrics strong,
+.drive-numbers strong,
+.hero-stat strong {
+  font-weight: 740;
+}
+
+.metric-stack article,
+.hero-stat,
+.bottom-metrics article,
+.drive-numbers div {
+  background: rgba(255, 255, 255, 0.46);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.battery-panel {
+  gap: 12px;
+}
+
+.battery-badge {
+  border-color: rgba(60, 60, 67, 0.10);
+  background: rgba(255, 255, 255, 0.64);
+  color: rgba(60, 60, 67, 0.70);
+}
+
+.battery-pack {
+  border-color: rgba(95, 105, 125, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(241, 244, 249, 0.50));
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.86),
+    inset 0 -8px 18px rgba(30, 45, 70, 0.055),
+    0 9px 20px rgba(45, 62, 88, 0.07);
+}
+
+.vehicle-card {
+  background:
+    radial-gradient(circle at 50% 72%, rgba(0, 122, 255, 0.09), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.42));
+}
+
+.vehicle-card::before {
+  inset: 10px;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.08), transparent 68%);
+}
+
+.model-s-illustration {
+  width: min(98%, 640px);
+  max-height: 164px;
+  opacity: 0.92;
+  filter: drop-shadow(0 18px 22px rgba(24, 36, 52, 0.08));
+}
+
+.energy-chart-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.42));
+}
+
+#energyLine {
+  stroke-width: 3.3;
+  filter: drop-shadow(0 6px 9px rgba(0, 122, 255, 0.18));
+}
+
+#energyArea {
+  fill: rgba(0, 122, 255, 0.085);
+}
+
+.energy-hover-tooltip {
+  border-color: rgba(0, 122, 255, 0.15);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 24px rgba(32, 45, 64, 0.12);
+  backdrop-filter: saturate(180%) blur(18px);
+}
+
+.map-shell,
+.route-shell {
+  border-color: rgba(60, 60, 67, 0.09);
+  background: #f2f4f7;
+  box-shadow:
+    inset 0 1px 8px rgba(255, 255, 255, 0.42),
+    0 10px 22px rgba(32, 45, 64, 0.06);
+}
+
+.map-shell::after,
+.route-shell::after {
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 46%, rgba(247, 248, 251, 0.22) 76%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.22));
+}
+
+.map-marker {
+  box-shadow: 0 12px 24px rgba(0, 122, 255, 0.28);
+}
+
+.map-marker::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: inherit;
+  background: rgba(0, 122, 255, 0.16);
+  z-index: -1;
+}
+
+.panel-head a {
+  background: rgba(0, 122, 255, 0.075);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.drive-panel > h3,
+.panel-head h3 {
+  font-size: 21px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tesla-logo-card,
+  .status-block,
+  .metric-stack article,
+  .map-panel,
+  .drive-panel,
+  .bottom-metrics article,
+  .hero-stat,
+  .battery-panel,
+  .energy-chart-card,
+  .vehicle-card {
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .metric-stack article:hover,
+  .bottom-metrics article:hover,
+  .hero-stat:hover,
+  .battery-panel:hover,
+  .energy-chart-card:hover,
+  .vehicle-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 38px rgba(32, 45, 64, 0.075), var(--glass-highlight);
+  }
+}
+
+/* Final shared surface layer. */
+.tesla-logo-card,
+.status-block,
+.metric-stack article,
+.map-panel,
+.drive-panel,
+.bottom-metrics article,
+.energy-chart-card {
+  background: linear-gradient(180deg, var(--surface-card-top), var(--surface-card-bottom));
+  border-color: var(--surface-border);
+  box-shadow: var(--surface-shadow);
+}
+
+.car-stage {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.62));
+  border-color: var(--surface-border);
+  box-shadow: 0 16px 38px rgba(32, 45, 64, 0.065), inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+.bottom-metrics article,
+.drive-numbers div {
+  background: var(--surface-inset);
+  border-color: rgba(60, 60, 67, 0.065);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.map-shell,
+.route-shell {
+  border-color: rgba(60, 60, 67, 0.075);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 7px 16px rgba(32, 45, 64, 0.045);
+}
+
+/* Neutral Apple-style color pass: blue is reserved for live data and actions. */
+:root {
+  --surface-card-top: rgba(255, 255, 255, 0.92);
+  --surface-card-bottom: rgba(255, 255, 255, 0.72);
+  --surface-inset: rgba(255, 255, 255, 0.56);
+  --surface-border: rgba(60, 60, 67, 0.070);
+  --surface-shadow: 0 8px 24px rgba(28, 28, 30, 0.042), inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+body {
+  background: #f5f5f7;
+}
+
+.car-stage,
+.hero-vehicle-panel {
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.car-stage::before,
+.hero-vehicle-panel .vehicle-card::before {
+  background: none;
+}
+
+.hero-vehicle-panel .vehicle-card {
+  background: rgba(255, 255, 255, 0.46);
+}
+
+#energyLine {
+  stroke: #0a84ff;
+  filter: drop-shadow(0 4px 7px rgba(10, 132, 255, 0.10));
+}
+
+#energyArea {
+  fill: rgba(10, 132, 255, 0.045);
+}
+
+.energy-point-label {
+  border-color: rgba(10, 132, 255, 0.12);
+  color: rgba(10, 104, 210, 0.88);
+  background: rgba(255, 255, 255, 0.90);
+}
+
+.map-grid img {
+  filter: saturate(0.78) brightness(1.01) contrast(0.98);
+}
+
+.map-shell::after,
+.route-shell::after {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.route-start circle {
+  fill: rgba(255, 255, 255, 0.96);
+  stroke: rgba(60, 60, 67, 0.34);
+}
+
+.route-start text {
+  fill: rgba(60, 60, 67, 0.72);
+}
+
+/* Final polish: warmer neutrals, quiet labels, and deliberately limited blue. */
+body {
+  background: #f6f6f8;
+}
+
+.energy-average b,
+.energy-point-label {
+  color: rgba(60, 60, 67, 0.76);
+}
+
+.energy-average {
+  border-color: rgba(60, 60, 67, 0.10);
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.energy-axis-label,
+.energy-axis-unit,
+.energy-x-label,
+.metric-stack > article > span,
+.hero-stat > span,
+.bottom-metrics > article > span,
+.drive-numbers > div > span,
+.battery-panel-head > span:first-child {
+  color: rgba(60, 60, 67, 0.54);
+}
+
+.hero-vehicle-panel .model-s-illustration {
+  opacity: 0.97;
+  filter: contrast(1.15) drop-shadow(0 9px 13px rgba(28, 28, 30, 0.048));
+}
+
+/* Left rail: clear status first, then quiet reference metrics. */
+.left-rail .status-block {
+  border-color: rgba(52, 199, 89, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 252, 249, 0.80));
+  box-shadow: 0 10px 24px rgba(28, 28, 30, 0.042), inset 3px 0 0 rgba(52, 199, 89, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.left-rail .metric-stack article {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.60));
+  box-shadow: 0 6px 18px rgba(28, 28, 30, 0.028), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.left-rail .metric-stack article > span {
+  color: rgba(60, 60, 67, 0.50);
+}
+
+.left-rail .metric-stack article > strong {
+  color: rgba(28, 28, 30, 0.92);
+}
+
+.left-rail .today-drive-card {
+  border-color: rgba(10, 132, 255, 0.11);
+  background: linear-gradient(180deg, rgba(247, 251, 255, 0.86), rgba(255, 255, 255, 0.66));
+  box-shadow: 0 8px 20px rgba(10, 132, 255, 0.035), inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+.map-grid img {
+  filter: saturate(0.72) brightness(1.015) contrast(0.98);
+}
+
+/* Data center shell: overlay navigation and route-level detail views. */
+[hidden] {
+  display: none !important;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.tesla-logo-card {
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+}
+
+.tesla-logo-card:focus-visible,
+.icon-button:focus-visible,
+.menu-link:focus-visible,
+.detail-home-link:focus-visible,
+.range-segmented button:focus-visible,
+.custom-range input:focus-visible,
+.drilldown-target:focus-visible {
+  outline: 3px solid rgba(0, 122, 255, 0.34);
+  outline-offset: 3px;
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(28, 28, 30, 0.22);
+  opacity: 0;
+  backdrop-filter: blur(4px);
+  transition: opacity 240ms ease;
+}
+
+.app-menu {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 100;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  width: 370px;
+  min-height: 100dvh;
+  padding: 24px 22px 20px;
+  border-right: 1px solid rgba(60, 60, 67, 0.10);
+  border-radius: 0 28px 28px 0;
+  background: rgba(250, 250, 252, 0.92);
+  box-shadow: 24px 0 70px rgba(28, 28, 30, 0.13), inset -1px 0 0 rgba(255, 255, 255, 0.76);
+  backdrop-filter: saturate(170%) blur(32px);
+  transform: translateX(-102%);
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  contain: layout style paint;
+}
+
+body.menu-open .menu-backdrop {
+  opacity: 1;
+}
+
+body.menu-open .app-menu {
+  transform: translateX(0);
+}
+
+.menu-header {
+  display: grid;
+  grid-template-columns: 1fr 40px;
+  align-items: center;
+  gap: 18px;
+  min-height: 56px;
+  padding: 0 4px 14px;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.08);
+}
+
+.menu-header img {
+  width: 190px;
+  height: auto;
+  object-fit: contain;
+  transform: translateX(-4px);
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(60, 60, 67, 0.09);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.72);
+  color: #1d1d1f;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.icon-button:active,
+.range-segmented button:active,
+.detail-home-link:active {
+  transform: scale(0.98);
+}
+
+.menu-close {
+  font-size: 27px;
+  font-weight: 350;
+  line-height: 1;
+}
+
+.menu-vehicle {
+  display: grid;
+  gap: 4px;
+  padding: 21px 8px 17px;
+}
+
+.menu-vehicle span,
+.detail-heading p,
+.detail-heading > span {
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.menu-vehicle strong {
+  font-size: 21px;
+  line-height: 1.15;
+  font-weight: 730;
+}
+
+.menu-nav {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.menu-link {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  min-height: 58px;
+  padding: 10px 26px 10px 12px;
+  border-top: 1px solid rgba(60, 60, 67, 0.065);
+  color: #1d1d1f;
+  text-decoration: none;
+}
+
+.menu-link:first-child {
+  border-top: 0;
+}
+
+.menu-link::after {
+  content: "›";
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  color: rgba(60, 60, 67, 0.30);
+  font-size: 23px;
+  transform: translateY(-50%);
+}
+
+.menu-link span {
+  font-size: 15px;
+  font-weight: 680;
+}
+
+.menu-link small {
+  color: rgba(60, 60, 67, 0.53);
+  font-size: 11px;
+  font-weight: 520;
+}
+
+.menu-link:hover {
+  background: rgba(118, 118, 128, 0.055);
+}
+
+.menu-link[aria-current] {
+  color: #007aff;
+  background: rgba(0, 122, 255, 0.065);
+}
+
+.menu-link[aria-current]::before {
+  content: "";
+  position: absolute;
+  inset: 13px auto 13px 0;
+  width: 3px;
+  border-radius: 2px;
+  background: #007aff;
+}
+
+.menu-footer {
+  padding: 16px 8px 2px;
+  border-top: 1px solid rgba(60, 60, 67, 0.08);
+}
+
+.menu-footer a {
+  color: rgba(60, 60, 67, 0.66);
+  font-size: 13px;
+  font-weight: 620;
+  text-decoration: none;
+}
+
+.detail-shell {
+  width: 100vw;
+  height: 100dvh;
+  min-width: 1180px;
+  overflow: auto;
+  padding: 26px 38px 44px;
+}
+
+.detail-topbar {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  min-height: 82px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.09);
+}
+
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(60, 60, 67, 0.48);
+  font-size: 12px;
+  font-weight: 620;
+  white-space: nowrap;
+}
+
+.detail-refresh-button,
+.detail-home-link {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid rgba(0, 122, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(0, 122, 255, 0.065);
+  color: #007aff;
+  font: inherit;
+  font-weight: 680;
+  line-height: 32px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.detail-refresh-button:hover,
+.detail-home-link:hover {
+  background: rgba(0, 122, 255, 0.11);
+}
+
+.detail-refresh-button:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.detail-menu-trigger {
+  width: 40px;
+  height: 40px;
+  gap: 4px;
+  border-color: rgba(60, 60, 67, 0.07);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    0 5px 14px rgba(28, 28, 30, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.detail-menu-trigger span {
+  display: block;
+  width: 15px;
+  height: 1.8px;
+  border-radius: 2px;
+  background: rgba(29, 29, 31, 0.78);
+}
+
+.detail-menu-trigger span:first-child,
+.detail-menu-trigger span:last-child {
+  width: 11px;
+}
+
+.detail-menu-trigger:hover {
+  border-color: rgba(60, 60, 67, 0.11);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.detail-heading {
+  display: grid;
+  gap: 3px;
+}
+
+.detail-heading h1 {
+  margin: 0;
+  font-size: 31px;
+  line-height: 1.05;
+  font-weight: 760;
+}
+
+.detail-home-link {
+  padding: 8px 13px;
+  border: 1px solid rgba(0, 122, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(0, 122, 255, 0.06);
+  color: #007aff;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.range-toolbar {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  min-height: 72px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.075);
+}
+
+.range-segmented {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid rgba(60, 60, 67, 0.08);
+  border-radius: 11px;
+  background: rgba(118, 118, 128, 0.08);
+}
+
+.range-segmented button {
+  min-height: 32px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(60, 60, 67, 0.66);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.range-segmented button[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.92);
+  color: #1d1d1f;
+  box-shadow: 0 1px 5px rgba(28, 28, 30, 0.10), inset 0 1px 0 #ffffff;
+}
+
+.custom-range {
+  display: grid;
+  grid-template-columns: max-content auto max-content;
+  align-items: end;
+  justify-content: end;
+  gap: 9px;
+  color: rgba(60, 60, 67, 0.50);
+  font-size: 12px;
+}
+
+.custom-range label {
+  display: grid;
+  gap: 4px;
+  color: rgba(60, 60, 67, 0.56);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.custom-range input {
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid rgba(60, 60, 67, 0.10);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #1d1d1f;
+}
+
+.detail-content {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: calc(100dvh - 225px);
+  padding: 72px 10%;
+  text-align: center;
+}
+
+.detail-state-mark {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(0, 122, 255, 0.14);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.15) 0 22%, rgba(0, 122, 255, 0.045) 24% 100%);
+}
+
+.detail-content h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 720;
+}
+
+.detail-content > p {
+  max-width: 600px;
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.detail-skeleton {
+  display: grid;
+  gap: 8px;
+  width: min(520px, 60vw);
+  margin-top: 28px;
+}
+
+.detail-skeleton span {
+  display: block;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(118, 118, 128, 0.09);
+}
+
+.detail-skeleton span:nth-child(2) {
+  width: 82%;
+}
+
+.detail-skeleton span:nth-child(3) {
+  width: 63%;
+}
+
+.detail-placeholder {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: calc(100dvh - 225px);
+  text-align: center;
+}
+
+.detail-placeholder h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.detail-placeholder > p {
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 14px;
+}
+
+.detail-placeholder.is-loading .detail-state-mark {
+  animation: detail-pulse 1.2s ease-in-out infinite;
+}
+
+.detail-content:has(.trips-view:not([hidden])) {
+  display: block;
+  min-height: 0;
+  padding: 22px 0 0;
+  text-align: left;
+}
+
+.charging-chart-shell {
+  position: relative;
+  min-height: 390px;
+  margin: 16px 20px;
+  overflow: hidden;
+  border: 1px solid rgba(60, 60, 67, 0.07);
+  border-radius: 17px;
+  background: rgba(249, 249, 251, 0.72);
+}
+
+.charging-chart-shell svg {
+  position: absolute;
+  inset: 38px 0 0;
+  width: 100%;
+  height: calc(100% - 38px);
+}
+
+.charging-chart-legend {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  z-index: 2;
+  display: flex;
+  gap: 15px;
+  color: rgba(60, 60, 67, 0.54);
+  font-size: 11px;
+  font-weight: 620;
+}
+
+.charging-chart-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.charging-chart-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.soc-dot { background: #0a84ff; }
+.power-dot { background: rgba(60, 60, 67, 0.34); }
+
+.charging-grid line {
+  stroke: rgba(60, 60, 67, 0.07);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.charging-grid text {
+  fill: rgba(60, 60, 67, 0.46);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  font-size: 11px;
+  font-weight: 560;
+}
+
+.charging-grid .power-scale {
+  fill: rgba(60, 60, 67, 0.58);
+  font-weight: 650;
+}
+
+.charging-soc-area {
+  fill: rgba(10, 132, 255, 0.075);
+}
+
+.charging-soc-line,
+.charging-power-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.charging-soc-line {
+  stroke: #0a84ff;
+  stroke-width: 3;
+  filter: drop-shadow(0 4px 7px rgba(10, 132, 255, 0.12));
+}
+
+.charging-power-line {
+  stroke: rgba(60, 60, 67, 0.34);
+  stroke-width: 1.8;
+}
+
+.charging-detail-metrics article:first-child strong {
+  font-size: 16px;
+}
+
+.energy-detail-chart-panel,
+.energy-day-detail {
+  overflow: hidden;
+  border: 1px solid rgba(60, 60, 67, 0.075);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(28, 39, 58, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.energy-detail-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 68px;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.065);
+}
+
+.energy-detail-chart-header > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.energy-detail-chart-header span {
+  color: rgba(60, 60, 67, 0.55);
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.energy-detail-chart-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.energy-detail-chart-header .charging-chart-legend {
+  position: static;
+}
+
+.energy-bar-dot { background: rgba(100, 108, 120, 0.20); }
+
+.energy-detail-chart-shell {
+  position: relative;
+  height: 330px;
+  margin: 8px 18px 18px;
+}
+
+.energy-detail-chart-shell svg {
+  width: 100%;
+  height: 100%;
+}
+
+.energy-detail-bars rect {
+  fill: rgba(100, 108, 120, 0.14);
+}
+
+.energy-detail-dots circle {
+  fill: white;
+  stroke: #0a84ff;
+  stroke-width: 2.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.battery-range-dot {
+  background: rgba(100, 108, 120, 0.22);
+}
+
+.battery-detail-ranges rect {
+  fill: rgba(100, 108, 120, 0.16);
+}
+
+.status-distribution-panel {
+  overflow: hidden;
+  padding-bottom: 18px;
+  border: 1px solid rgba(60, 60, 67, 0.075);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(28, 39, 58, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.status-distribution {
+  display: flex;
+  height: 22px;
+  margin: 24px 22px 16px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(118, 118, 128, 0.07);
+}
+
+.status-distribution span {
+  min-width: 3px;
+  box-shadow: inset -1px 0 rgba(255, 255, 255, 0.42);
+}
+
+.status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  padding: 0 22px;
+}
+
+.status-legend span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 12px;
+}
+
+.status-legend i,
+.status-event-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-legend b {
+  color: rgba(29, 29, 31, 0.76);
+  font-weight: 680;
+}
+
+.status-list-panel {
+  max-height: 500px;
+}
+
+.status-event-row .trip-row-route {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.status-event-row > strong {
+  font-size: 16px;
+}
+
+.status-event-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.status-event-metrics strong {
+  font-size: 18px;
+}
+
+.energy-days-layout {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.38fr) minmax(580px, 0.62fr);
+  gap: 18px;
+  min-height: 360px;
+}
+
+.energy-days-panel {
+  max-height: 430px;
+}
+
+.energy-day-detail {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.energy-day-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-content: center;
+  padding: 20px;
+}
+
+.energy-day-metrics article {
+  display: grid;
+  gap: 10px;
+  min-height: 105px;
+  align-content: center;
+  padding: 16px;
+  border: 1px solid rgba(60, 60, 67, 0.065);
+  border-radius: 16px;
+  background: rgba(248, 248, 250, 0.72);
+}
+
+.energy-day-metrics span {
+  color: rgba(60, 60, 67, 0.55);
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.energy-day-metrics strong {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.energy-day-metrics small {
+  margin-left: 4px;
+  color: rgba(60, 60, 67, 0.50);
+  font-size: 0.54em;
+}
+
+.trips-view {
+  display: grid;
+  gap: 18px;
+}
+
+.trip-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.trip-summary article,
+.trip-list-panel,
+.trip-detail-panel {
+  border: 1px solid rgba(60, 60, 67, 0.075);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(28, 39, 58, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.trip-summary article {
+  display: grid;
+  align-content: center;
+  min-height: 92px;
+  padding: 16px 18px;
+  border-radius: 18px;
+}
+
+.trip-summary span,
+.trip-list-panel header span,
+.trip-detail-header span,
+.trip-detail-metrics span {
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.trip-summary strong {
+  margin-top: 8px;
+  font-size: 25px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.trip-summary small,
+.trip-row strong small,
+.trip-detail-metrics small {
+  margin-left: 4px;
+  color: rgba(60, 60, 67, 0.50);
+  font-size: 0.54em;
+  font-weight: 620;
+}
+
+.trips-workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.34fr) minmax(620px, 0.66fr);
+  gap: 18px;
+  min-height: 610px;
+}
+
+.trip-list-panel,
+.trip-detail-panel {
+  min-width: 0;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.trip-list-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: calc(100dvh - 250px);
+}
+
+.trip-list-panel > header,
+.trip-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 68px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.065);
+}
+
+.trip-list-panel h2,
+.trip-detail-header h2 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+.trip-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.trip-list-more {
+  padding: 14px 18px 16px;
+  color: rgba(60, 60, 67, 0.48);
+  font-size: 11px;
+  font-weight: 620;
+  text-align: center;
+}
+
+.trip-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 14px;
+  width: 100%;
+  padding: 15px 18px;
+  border: 0;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.06);
+  background: transparent;
+  color: #1d1d1f;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trip-row:hover {
+  background: rgba(118, 118, 128, 0.045);
+}
+
+.trip-row[aria-pressed="true"] {
+  background: rgba(0, 122, 255, 0.075);
+  box-shadow: inset 3px 0 0 #0a84ff;
+}
+
+.trip-row-time,
+.trip-row-meta {
+  color: rgba(60, 60, 67, 0.53);
+  font-size: 11px;
+}
+
+.trip-row strong {
+  grid-row: span 2;
+  align-self: center;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.trip-row-route {
+  overflow: hidden;
+  color: rgba(29, 29, 31, 0.82);
+  font-size: 13px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trip-row-route b {
+  margin: 0 6px;
+  color: rgba(60, 60, 67, 0.30);
+}
+
+.trip-empty {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  color: rgba(60, 60, 67, 0.48);
+  font-size: 13px;
+}
+
+.trip-detail-panel {
+  display: grid;
+  grid-template-rows: auto minmax(390px, 1fr) auto;
+  padding-bottom: 16px;
+}
+
+.trip-detail-header > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.trip-detail-header h2 {
+  overflow: hidden;
+  max-width: 680px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trip-detail-header > strong {
+  color: rgba(60, 60, 67, 0.54);
+  font-size: 12px;
+  font-weight: 620;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.trip-detail-map {
+  position: relative;
+  min-height: 390px;
+  margin: 16px 20px;
+  overflow: hidden;
+  border: 1px solid rgba(60, 60, 67, 0.08);
+  border-radius: 17px;
+  background: #eef1f4;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.trip-detail-map.is-dragging {
+  cursor: grabbing;
+}
+
+.trip-detail-grid,
+#tripDetailSvg {
+  position: absolute;
+  inset: 0;
+}
+
+.trip-detail-grid img {
+  position: absolute;
+  max-width: none;
+  filter: saturate(0.78) brightness(1.01) contrast(0.98);
+  pointer-events: none;
+}
+
+.trip-detail-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(10, 132, 255, 0.22));
+}
+
+#tripDetailPath {
+  fill: none;
+  stroke: #0a84ff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trip-map-marker circle {
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.trip-map-marker text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  font-size: 10px;
+  font-weight: 720;
+}
+
+.trip-map-start circle { fill: white; stroke: #0a84ff; }
+.trip-map-start text { fill: #0a84ff; }
+.trip-map-end circle { fill: #0a84ff; stroke: white; }
+.trip-map-end text { fill: white; }
+
+.trip-map-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(245, 245, 247, 0.74);
+  color: rgba(60, 60, 67, 0.56);
+  font-size: 13px;
+  backdrop-filter: blur(7px);
+}
+
+.trip-detail-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.trip-detail-metrics article {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid rgba(60, 60, 67, 0.065);
+  border-radius: 14px;
+  background: rgba(248, 248, 250, 0.72);
+}
+
+.trip-detail-metrics strong {
+  overflow: hidden;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statistics-chart-panel {
+  min-height: 360px;
+}
+
+.statistics-bars rect {
+  fill: rgba(10, 132, 255, 0.14);
+}
+
+.statistics-distance-dot {
+  background: rgba(10, 132, 255, 0.20) !important;
+}
+
+.statistics-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.46fr) minmax(0, 0.54fr);
+  gap: 18px;
+}
+
+.statistics-state-panel,
+.statistics-breakdown-panel {
+  min-width: 0;
+  margin: 0;
+}
+
+.statistics-breakdown-panel {
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.statistics-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 18px 20px 20px;
+}
+
+.statistics-breakdown article {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  gap: 7px 9px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(60, 60, 67, 0.065);
+  border-radius: 14px;
+  background: rgba(248, 248, 250, 0.70);
+}
+
+.statistics-breakdown article > i {
+  width: 8px;
+  height: 8px;
+  margin-top: 3px;
+  border-radius: 50%;
+}
+
+.statistics-breakdown article > span {
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.statistics-breakdown strong {
+  grid-column: 1 / -1;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.statistics-breakdown small {
+  margin-left: 4px;
+  color: rgba(60, 60, 67, 0.48);
+  font-size: 0.58em;
+}
+
+.statistics-empty-text {
+  color: rgba(60, 60, 67, 0.48);
+}
+
+#batterySummary {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.settings-panel {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.settings-panel > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 74px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.065);
+}
+
+.settings-panel > header > div {
+  display: grid;
+  gap: 4px;
+}
+
+.settings-panel header span,
+.settings-runtime article span,
+.settings-password-form label {
+  color: rgba(60, 60, 67, 0.58);
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.settings-panel h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.settings-status-pill {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(52, 199, 89, 0.10);
+  color: #248a3d !important;
+}
+
+.settings-status-pill.is-error {
+  background: rgba(255, 59, 48, 0.09);
+  color: #d70015 !important;
+}
+
+.settings-quality {
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px 20px;
+}
+
+.settings-quality article {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 54px;
+  padding: 11px 13px;
+  border: 1px solid rgba(60, 60, 67, 0.065);
+  border-radius: 14px;
+  background: rgba(248, 248, 250, 0.70);
+}
+
+.settings-quality article i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34c759;
+}
+
+.settings-quality article.has-issue i { background: #ff9f0a; }
+.settings-quality article div { display: grid; gap: 3px; min-width: 0; }
+.settings-quality article strong { font-size: 14px; }
+.settings-quality article span { color: rgba(60, 60, 67, 0.54); font-size: 11px; }
+.settings-quality article > b { color: rgba(29, 29, 31, 0.72); font-size: 14px; }
+
+.metric-help {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  cursor: help;
+  text-decoration: underline dotted rgba(60, 60, 67, 0.28);
+  text-underline-offset: 3px;
+}
+
+.metric-help::after {
+  content: attr(data-explanation);
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 9px);
+  z-index: 30;
+  width: 250px;
+  padding: 9px 11px;
+  border: 1px solid rgba(60, 60, 67, 0.09);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 28px rgba(28, 28, 30, 0.12);
+  color: rgba(29, 29, 31, 0.82);
+  font-size: 11px;
+  font-weight: 540;
+  line-height: 1.55;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 140ms ease, transform 140ms ease;
+  pointer-events: none;
+}
+
+.metric-help:hover::after,
+.metric-help:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.charging-chart-shell,
+.energy-detail-chart-shell {
+  position: relative;
+}
+
+.detail-chart-tooltip {
+  position: absolute;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid rgba(60, 60, 67, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(28, 28, 30, 0.11);
+  color: rgba(60, 60, 67, 0.62);
+  font-size: 11px;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  backdrop-filter: blur(18px) saturate(1.35);
+  pointer-events: none;
+}
+
+.detail-chart-tooltip[hidden] { display: none; }
+.detail-chart-tooltip strong { color: #1d1d1f; font-size: 12px; }
+
+.detail-chart-guide {
+  position: absolute;
+  z-index: 20;
+  width: 1px;
+  background: rgba(0, 122, 255, 0.22);
+  transform: translateX(-0.5px);
+  pointer-events: none;
+}
+
+.detail-chart-guide[hidden] { display: none; }
+
+.settings-runtime {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 18px 20px 20px;
+}
+
+.settings-runtime article {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(60, 60, 67, 0.065);
+  border-radius: 14px;
+  background: rgba(248, 248, 250, 0.70);
+}
+
+.settings-runtime strong {
+  overflow: hidden;
+  font-size: 17px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-runtime .is-good { color: #248a3d; }
+.settings-runtime .is-bad { color: #d70015; }
+
+.settings-password-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px 20px 20px;
+}
+
+.settings-password-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.settings-password-form input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgba(60, 60, 67, 0.11);
+  border-radius: 11px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.84);
+  color: #1d1d1f;
+  font: inherit;
+}
+
+.settings-password-form input:focus {
+  border-color: rgba(0, 122, 255, 0.48);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.10);
+}
+
+.settings-password-form input:disabled {
+  opacity: 0.48;
+}
+
+.settings-password-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 4px;
+}
+
+.settings-password-actions p {
+  margin: 0;
+  color: rgba(60, 60, 67, 0.54);
+  font-size: 12px;
+}
+
+.settings-password-actions p.is-error { color: #d70015; }
+.settings-password-actions p.is-success { color: #248a3d; }
+.settings-password-actions p.is-warning { color: #9a6700; }
+
+.settings-password-actions button {
+  min-height: 38px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #007aff;
+  color: white;
+  font-size: 13px;
+  font-weight: 680;
+  cursor: pointer;
+}
+
+.settings-password-actions button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.settings-password-panel {
+  grid-column: 1 / -1;
+}
+
+@keyframes detail-pulse {
+  50% { opacity: 0.48; transform: scale(0.94); }
+}
+
+.drilldown-target {
+  position: relative;
+  cursor: pointer;
+}
+
+.drilldown-target::after {
+  content: "›";
+  position: absolute;
+  top: 14px;
+  right: 15px;
+  z-index: 4;
+  color: rgba(60, 60, 67, 0.22);
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  pointer-events: none;
+}
+
+.drilldown-target:hover::after,
+.drilldown-target:focus-visible::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-menu,
+  .menu-backdrop,
+  .drilldown-target::after {
+    transition: none;
+  }
+}
+
+/* Semantic feedback, resilient module states, and restrained data motion. */
+:root {
+  --semantic-online: #30c761;
+  --semantic-driving: #0a84ff;
+  --semantic-charging: #ff9f0a;
+  --semantic-warning: #ff9f0a;
+  --semantic-offline: #ff453a;
+  --semantic-neutral: #8e8e93;
+  --semantic-updating: #af52de;
+}
+
+.state-dot[data-state="suspended"],
+.state-dot[data-state="unknown"] {
+  background: var(--semantic-neutral);
+  box-shadow: 0 0 0 7px rgba(142, 142, 147, 0.13);
+}
+
+.system-strip #headerState[data-state="asleep"]::before,
+.system-strip #headerState[data-state="suspended"]::before,
+.system-strip #headerState[data-state="unknown"]::before { background: var(--semantic-neutral); }
+.system-strip #headerState[data-state="updating"]::before { background: var(--semantic-updating); }
+
+.browser-offline .system-strip #headerState,
+.vehicle-data-error .system-strip #headerState {
+  border-color: rgba(255, 69, 58, 0.14);
+}
+
+.browser-offline .system-strip .data-freshness,
+.vehicle-data-error .system-strip .data-freshness,
+.detail-shell.has-sync-error .detail-sync-status {
+  color: #b42318;
+}
+
+.data-recovered .system-strip .data-freshness,
+.detail-shell.is-recovered .detail-sync-status {
+  color: #248a3d;
+}
+
+.map-module-state,
+.trip-map-loading {
+  position: absolute;
+  z-index: 12;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  background: rgba(247, 248, 250, 0.76);
+  color: rgba(60, 60, 67, 0.60);
+  font-size: 13px;
+  font-weight: 590;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.map-module-state[hidden],
+.trip-map-loading[hidden] { display: none; }
+
+.map-module-state[data-mode="error"],
+.trip-map-loading[data-mode="error"] {
+  color: #b42318;
+  background: rgba(255, 250, 249, 0.82);
+}
+
+.trip-map-loading[data-mode="warning"] {
+  color: #9a6700;
+  background: rgba(255, 251, 242, 0.84);
+}
+
+.trip-map-loading.is-compact {
+  inset: 12px 12px auto auto;
+  width: auto;
+  min-height: 34px;
+  padding: 6px 7px 6px 11px;
+  border: 1px solid rgba(255, 159, 10, 0.16);
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(28, 28, 30, 0.07);
+  backdrop-filter: blur(14px);
+}
+
+.module-retry-button,
+.detail-retry-button {
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid rgba(10, 132, 255, 0.16);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--accent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(28, 28, 30, 0.05);
+}
+
+.module-retry-button:hover,
+.detail-retry-button:hover { background: #ffffff; }
+
+.detail-retry-button {
+  margin-top: 6px;
+  padding-inline: 14px;
+}
+
+.detail-placeholder.has-error .detail-state-mark {
+  border-color: rgba(255, 69, 58, 0.18);
+  background: rgba(255, 69, 58, 0.07);
+}
+
+.detail-placeholder.has-error .detail-state-mark::after {
+  background: var(--semantic-offline);
+}
+
+.detail-placeholder:not(.is-loading) .detail-skeleton {
+  display: none;
+}
+
+.metric-updated {
+  animation: metric-value-update 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: 50% 65%;
+}
+
+.battery-segments.battery-updated .battery-segment::before {
+  animation: battery-value-update 340ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chart-data-updated svg,
+.chart-data-updated .energy-chart {
+  animation: chart-value-update 260ms ease-out;
+}
+
+@keyframes metric-value-update {
+  0% { opacity: 0.66; transform: translateY(2px) scale(0.985); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes battery-value-update {
+  0% { opacity: 0.55; transform: scaleY(0.92); }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes chart-value-update {
+  0% { opacity: 0.62; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metric-updated,
+  .battery-segments.battery-updated .battery-segment::before,
+  .chart-data-updated svg,
+  .chart-data-updated .energy-chart {
+    animation: none !important;
+  }
+}
+
+/* Final light-mode refinement: quiet system surfaces, consistent detail rhythm. */
+:root {
+  --accent: #0a84ff;
+  --accent-2: #30c761;
+  --warn: #ff9f0a;
+  --danger: #ff453a;
+  --surface-final: rgba(255, 255, 255, 0.82);
+  --surface-final-inset: rgba(248, 248, 250, 0.82);
+  --border-final: rgba(60, 60, 67, 0.075);
+  --shadow-final: 0 12px 32px rgba(30, 42, 60, 0.052), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+body {
+  background: linear-gradient(180deg, #f7f8fa 0%, #f2f3f6 100%);
+}
+
+.icon-command {
+  display: inline-grid !important;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  font: inherit;
+  line-height: 1 !important;
+}
+
+.icon-command > span {
+  display: block;
+  padding: 0 !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  transform-origin: 50% 50%;
+}
+
+.icon-command:active:not(:disabled),
+.detail-home-link:active,
+.range-segmented button:active,
+.trip-row:active {
+  transform: scale(0.97);
+}
+
+.icon-command[data-loading="true"] > span,
+.detail-shell.is-refreshing .detail-refresh-button > span {
+  animation: command-spin 820ms linear infinite;
+}
+
+.system-strip {
+  gap: 10px;
+  transform: none;
+}
+
+.system-strip #headerState {
+  position: relative;
+  padding: 5px 10px 5px 20px;
+  border: 1px solid var(--border-final);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.system-strip #headerState::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8e8e93;
+}
+
+.system-strip #headerState[data-state="online"]::before { background: var(--accent-2); }
+.system-strip #headerState[data-state="driving"]::before { background: var(--accent); }
+.system-strip #headerState[data-state="charging"]::before { background: var(--warn); }
+.system-strip #headerState[data-state="offline"]::before { background: var(--danger); }
+.system-strip #headerState[data-state="asleep"]::before,
+.system-strip #headerState[data-state="suspended"]::before,
+.system-strip #headerState[data-state="unknown"]::before { background: var(--semantic-neutral); }
+.system-strip #headerState[data-state="updating"]::before { background: var(--semantic-updating); }
+
+.system-strip .manual-refresh {
+  border: 1px solid rgba(10, 132, 255, 0.11);
+  background: rgba(10, 132, 255, 0.06);
+}
+
+.system-strip .logout-command {
+  color: rgba(60, 60, 67, 0.60);
+  background: transparent;
+}
+
+.system-strip .data-freshness.is-stale,
+.vehicle-data-error .system-strip .data-freshness {
+  color: #b25000;
+}
+
+.detail-shell {
+  padding: 22px 34px 42px;
+}
+
+.detail-topbar {
+  min-height: 76px;
+  padding-bottom: 14px;
+}
+
+.detail-actions {
+  gap: 8px;
+}
+
+.detail-sync-status {
+  min-width: 96px;
+  color: rgba(60, 60, 67, 0.48);
+  text-align: right;
+  transition: color 180ms ease, opacity 180ms ease;
+}
+
+.detail-shell.is-refreshing .detail-sync-status { color: rgba(10, 132, 255, 0.72); }
+.detail-shell.has-sync-error .detail-sync-status { color: #b42318; }
+.detail-shell.has-sync-error.is-cache-fallback .detail-sync-status { color: #9a6700; }
+.detail-shell.is-recovered .detail-sync-status { color: #248a3d; }
+
+.detail-refresh-button {
+  border: 1px solid rgba(10, 132, 255, 0.11);
+  background: rgba(10, 132, 255, 0.06);
+  color: var(--accent);
+}
+
+.detail-home-link {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(10, 132, 255, 0.92);
+  line-height: 30px;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.detail-home-link:hover { background: rgba(10, 132, 255, 0.06); }
+
+.range-toolbar {
+  padding-top: 14px;
+}
+
+.detail-content:has(.trips-view:not([hidden])) {
+  padding-top: 18px;
+}
+
+.detail-placeholder {
+  width: 100%;
+  min-height: calc(100dvh - 205px);
+}
+
+.trips-view:not([hidden]),
+.charging-view:not([hidden]),
+.energy-view:not([hidden]),
+.battery-view:not([hidden]),
+.status-view:not([hidden]),
+.statistics-view:not([hidden]),
+.settings-view:not([hidden]) {
+  animation: detail-reveal 180ms ease-out both;
+}
+
+.detail-placeholder.is-loading .detail-state-mark,
+.detail-placeholder.is-loading > h2,
+.detail-placeholder.is-loading > p {
+  display: none;
+}
+
+.detail-skeleton {
+  gap: 14px;
+  width: min(1480px, 100%);
+  margin-top: 0;
+}
+
+.trips-view {
+  width: min(1480px, 100%);
+  margin-inline: auto;
+}
+
+.detail-skeleton-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.detail-skeleton-summary span,
+.detail-skeleton-list,
+.detail-skeleton-canvas {
+  border: 1px solid var(--border-final);
+  background: var(--surface-final);
+  box-shadow: var(--shadow-final);
+}
+
+.detail-skeleton-summary span {
+  width: auto !important;
+  height: 92px;
+  border-radius: 18px;
+}
+
+.detail-skeleton-workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.34fr) minmax(620px, 0.66fr);
+  gap: 18px;
+  min-height: 500px;
+}
+
+.detail-skeleton-list,
+.detail-skeleton-canvas {
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.detail-skeleton-list { padding-top: 68px; }
+.detail-skeleton-list i {
+  display: block;
+  height: 78px;
+  margin: 0 18px;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.06);
+  background: linear-gradient(90deg, rgba(118, 118, 128, 0.05), rgba(118, 118, 128, 0.09), rgba(118, 118, 128, 0.05));
+  background-size: 200% 100%;
+}
+
+.detail-skeleton-canvas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-content: end;
+  padding: 84px 20px 20px;
+}
+
+.detail-skeleton-canvas i {
+  grid-column: 1 / -1;
+  align-self: stretch;
+  min-height: 320px;
+  border-radius: 17px;
+  background: rgba(118, 118, 128, 0.055);
+}
+
+.detail-skeleton-canvas span {
+  width: auto !important;
+  height: 68px;
+  border-radius: 14px;
+}
+
+.detail-placeholder.is-loading .detail-skeleton-summary span,
+.detail-placeholder.is-loading .detail-skeleton-list i,
+.detail-placeholder.is-loading .detail-skeleton-canvas i,
+.detail-placeholder.is-loading .detail-skeleton-canvas span {
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+.trip-summary article,
+.trip-list-panel,
+.trip-detail-panel,
+.energy-detail-chart-panel,
+.status-distribution-panel,
+.energy-day-detail,
+.statistics-breakdown-panel,
+.settings-panel {
+  border-color: var(--border-final);
+  background: var(--surface-final);
+  box-shadow: var(--shadow-final);
+}
+
+.trip-summary article {
+  min-height: 90px;
+  padding: 15px 17px;
+  border-radius: 18px;
+}
+
+.trip-list-panel,
+.trip-detail-panel,
+.energy-detail-chart-panel,
+.status-distribution-panel,
+.energy-day-detail,
+.statistics-breakdown-panel,
+.settings-panel {
+  border-radius: 20px;
+}
+
+.trip-list-panel > header,
+.trip-detail-header,
+.energy-detail-chart-header,
+.settings-panel > header {
+  min-height: 66px;
+  padding: 14px 18px;
+}
+
+.trip-list-panel h2,
+.trip-detail-header h2,
+.energy-detail-chart-header h2,
+.settings-panel h2 {
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.trip-summary span,
+.trip-list-panel header span,
+.trip-detail-header span,
+.trip-detail-metrics span,
+.energy-detail-chart-header span,
+.energy-day-metrics span,
+.settings-panel header span,
+.settings-runtime article span {
+  color: rgba(60, 60, 67, 0.56);
+  font-size: 12px;
+  font-weight: 590;
+}
+
+.trip-summary strong,
+.trip-row strong,
+.trip-detail-metrics strong,
+.energy-day-metrics strong,
+.settings-runtime strong {
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.trip-detail-metrics article,
+.energy-day-metrics article,
+.statistics-breakdown article,
+.settings-runtime article,
+.settings-quality article {
+  border-color: rgba(60, 60, 67, 0.065);
+  background: var(--surface-final-inset);
+}
+
+.trip-row {
+  transition: background-color 180ms ease, box-shadow 180ms ease, transform 120ms ease;
+}
+
+.trip-row[aria-pressed="true"] {
+  background: rgba(10, 132, 255, 0.065);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.trip-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(118, 118, 128, 0.30) transparent;
+}
+
+.trip-list::-webkit-scrollbar { width: 8px; }
+.trip-list::-webkit-scrollbar-track { background: transparent; }
+.trip-list::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(118, 118, 128, 0.28);
+  background-clip: padding-box;
+}
+
+.charging-soc-line,
+#tripDetailPath { stroke: var(--accent); }
+.charging-power-line { stroke: var(--warn); }
+.power-dot { background: var(--warn) !important; }
+.soc-dot { background: var(--accent) !important; }
+
+.battery-panel[data-tone="good"] .battery-badge,
+.battery-panel[data-tone="good"] #batteryAdviceStatus { color: #248a3d; }
+.battery-panel[data-tone="good"] .battery-badge { background: rgba(48, 199, 97, 0.08); }
+.battery-panel[data-tone="medium"] .battery-badge,
+.battery-panel[data-tone="medium"] #batteryAdviceStatus { color: #8a6500; }
+.battery-panel[data-tone="medium"] .battery-badge { background: rgba(255, 204, 0, 0.09); }
+.battery-panel[data-tone="low"] .battery-badge,
+.battery-panel[data-tone="low"] #batteryAdviceStatus { color: #b25000; }
+.battery-panel[data-tone="low"] .battery-badge { background: rgba(255, 159, 10, 0.09); }
+.battery-panel[data-tone="critical"] .battery-badge,
+.battery-panel[data-tone="critical"] #batteryAdviceStatus { color: #d70015; }
+.battery-panel[data-tone="critical"] .battery-badge { background: rgba(255, 69, 58, 0.08); }
+
+.trip-map-loading {
+  background: rgba(247, 248, 250, 0.78);
+  color: rgba(60, 60, 67, 0.55);
+}
+
+.trip-map-loading[data-mode="error"] {
+  color: #b42318;
+  background: rgba(255, 250, 249, 0.82);
+}
+
+.trip-map-loading[data-mode="warning"] {
+  color: #9a6700;
+  background: rgba(255, 251, 242, 0.84);
+}
+
+.trip-map-loading.is-compact {
+  inset: 12px 12px auto auto;
+  width: auto;
+  min-height: 34px;
+  padding: 6px 7px 6px 11px;
+  border: 1px solid rgba(255, 159, 10, 0.16);
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(28, 28, 30, 0.07);
+}
+
+.detail-chart-tooltip {
+  border-color: rgba(60, 60, 67, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 22px rgba(28, 28, 30, 0.09);
+}
+
+@keyframes command-spin { to { transform: rotate(360deg); } }
+@keyframes detail-reveal {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes skeleton-shimmer {
+  0%, 100% { opacity: 0.58; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-command > span,
+  .detail-sync-status,
+  .detail-home-link,
+  .trip-row,
+  .trips-view:not([hidden]),
+  .charging-view:not([hidden]),
+  .energy-view:not([hidden]),
+  .battery-view:not([hidden]),
+  .status-view:not([hidden]),
+  .statistics-view:not([hidden]),
+  .settings-view:not([hidden]),
+  .detail-placeholder.is-loading .detail-skeleton-summary span,
+  .detail-placeholder.is-loading .detail-skeleton-list i,
+  .detail-placeholder.is-loading .detail-skeleton-canvas i,
+  .detail-placeholder.is-loading .detail-skeleton-canvas span {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+

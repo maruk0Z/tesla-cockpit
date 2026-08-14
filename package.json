@@ -1,0 +1,15 @@
+{
+  "name": "tesla-cockpit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A read-only TeslaMate cockpit powered by the Grafana datasource API.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check public/app.js && node --check public/shell.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
+
