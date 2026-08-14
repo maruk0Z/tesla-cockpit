@@ -13,6 +13,31 @@
 - 在线时 30 秒刷新，休眠时 5 分钟刷新
 - 仅通过 Grafana 服务账户读取数据，不控制车辆
 
+## 界面预览
+
+以下截图已对车辆名称、位置、路线和活动时间进行匿名化处理。
+
+<details open>
+<summary><strong>车辆主页</strong></summary>
+
+![Tesla Cockpit 车辆主页](docs/screenshots/dashboard-anonymized.png)
+
+</details>
+
+<details>
+<summary><strong>功能导航</strong></summary>
+
+![Tesla Cockpit 功能导航](docs/screenshots/navigation-anonymized.png)
+
+</details>
+
+<details>
+<summary><strong>行程详情</strong></summary>
+
+![Tesla Cockpit 行程详情](docs/screenshots/trips-anonymized.png)
+
+</details>
+
 ## 环境要求
 
 - Node.js 18 或更高版本
