@@ -123,6 +123,60 @@ npm start
 
 项目当前只使用 Node.js 内置模块，不需要额外安装 npm 依赖。
 
+## Docker 部署
+
+Docker 方式会把程序封装在容器中，并把真实配置与地址缓存保存在宿主机的 `docker-data` 目录。该目录已被 Git 忽略，不会进入镜像或仓库。
+
+1. 创建 Docker 数据目录并复制配置模板：
+
+```powershell
+New-Item -ItemType Directory -Force docker-data
+Copy-Item config.example.json docker-data\config.json
+```
+
+2. 编辑 `docker-data\config.json`。如果 Grafana 运行在同一台 Windows Docker Desktop 主机上，推荐使用下面的地址：
+
+```json
+{
+  "grafanaUrl": "http://host.docker.internal:3000"
+}
+```
+
+其余配置项继续按“配置说明”填写。`host.docker.internal` 会从 Cockpit 容器访问 Docker Desktop 所在的宿主机，不需要公开 PostgreSQL 端口。
+
+3. 为 Docker 配置生成登录密码哈希：
+
+```powershell
+.\set-site-password.ps1 -ConfigPath .\docker-data\config.json
+```
+
+4. 构建并启动容器：
+
+```powershell
+docker compose up -d --build
+```
+
+5. 检查运行和健康状态：
+
+```powershell
+docker compose ps
+docker compose logs --tail 100 cockpit
+```
+
+默认仍通过 `http://服务器地址:3456` 访问。容器异常退出或 Docker Desktop 重启后会自动恢复。停止或更新服务可使用：
+
+```powershell
+docker compose down
+docker compose up -d --build
+```
+
+如需修改宿主机端口，可在执行 Compose 前设置 `TESLA_COCKPIT_PORT`，容器内部端口保持为 `3456`：
+
+```powershell
+$env:TESLA_COCKPIT_PORT = 8080
+docker compose up -d
+```
+
 ## 配置说明
 
 | 配置项 | 必填 | 说明 |
@@ -137,6 +191,8 @@ npm start
 | `cookieSecure` | 否 | HTTPS 部署时设为 `true`，纯 HTTP 局域网部署保持 `false` |
 
 `config.json`、`address-cache.json` 和日志文件均已被 `.gitignore` 排除。不要把真实 Token、Key、密码哈希、会话密钥或地址缓存提交到 Git。
+
+Docker 部署使用 `docker-data/config.json` 和 `docker-data/address-cache.json`。配置目录以可写方式挂载，是为了保留网页内修改密码的能力；不要把该目录共享或提交到版本控制。
 
 ### 获取 Grafana 配置
 

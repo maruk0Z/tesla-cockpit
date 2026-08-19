@@ -6,8 +6,10 @@ const crypto = require("crypto");
 const PORT = Number(process.env.PORT || 3456);
 const ROOT = __dirname;
 const PUBLIC = path.join(ROOT, "public");
-const CONFIG_PATH = path.join(ROOT, "config.json");
-const ADDRESS_RESULT_CACHE_PATH = path.join(ROOT, "address-cache.json");
+const CONFIG_PATH = path.resolve(process.env.TESLA_COCKPIT_CONFIG_PATH || path.join(ROOT, "config.json"));
+const ADDRESS_RESULT_CACHE_PATH = path.resolve(
+  process.env.TESLA_COCKPIT_ADDRESS_CACHE_PATH || path.join(ROOT, "address-cache.json"),
+);
 const SESSION_COOKIE = "tesla_cockpit_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
 const PASSWORD_HASH_PREFIX = "pbkdf2_sha256";

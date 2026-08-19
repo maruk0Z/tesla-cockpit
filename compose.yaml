@@ -1,0 +1,25 @@
+services:
+  cockpit:
+    image: tesla-cockpit:local
+    build:
+      context: .
+    container_name: tesla-cockpit
+    init: true
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    ports:
+      - "${TESLA_COCKPIT_PORT:-3456}:3456"
+    environment:
+      PORT: 3456
+      TESLA_COCKPIT_CONFIG_PATH: /data/config.json
+      TESLA_COCKPIT_ADDRESS_CACHE_PATH: /data/address-cache.json
+    volumes:
+      - ./docker-data:/data
+    tmpfs:
+      - /tmp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
