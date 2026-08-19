@@ -3855,49 +3855,6 @@ body.menu-open .app-menu {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
 }
 
-.system-strip {
-  gap: 2px;
-  min-height: 34px;
-  padding: 3px 4px;
-  border: 1px solid rgba(60, 60, 67, 0.075);
-  border-radius: 17px;
-  background: rgba(255, 255, 255, 0.54);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
-  backdrop-filter: saturate(160%) blur(18px);
-}
-
-.system-strip span,
-.system-strip time,
-.system-strip a {
-  padding: 0 7px;
-  color: rgba(60, 60, 67, 0.52);
-  font-size: 11px;
-  font-weight: 570;
-}
-
-.system-strip #headerState {
-  min-height: 26px;
-  padding: 0 8px 0 19px;
-  border: 0;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 1px 3px rgba(28, 28, 30, 0.045);
-  font-weight: 650;
-}
-
-.system-strip .manual-refresh {
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
-  min-height: 28px !important;
-  border-color: rgba(10, 132, 255, 0.09);
-  background: rgba(10, 132, 255, 0.055);
-}
-
-.system-strip .logout-command {
-  padding: 0 7px;
-  color: rgba(60, 60, 67, 0.46);
-}
-
 .label,
 .muted,
 .metric-stack article > span,
@@ -4611,5 +4568,49 @@ body {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* Keep the compact home status control authoritative after detail-view rules. */
+.system-strip {
+  gap: 2px;
+  min-height: 34px;
+  padding: 3px 4px;
+  border: 1px solid rgba(60, 60, 67, 0.075);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.54);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  backdrop-filter: saturate(160%) blur(18px);
+}
+
+.system-strip span,
+.system-strip time,
+.system-strip a {
+  padding: 0 7px;
+  color: rgba(60, 60, 67, 0.52);
+  font-size: 11px;
+  font-weight: 570;
+}
+
+.system-strip #headerState {
+  min-height: 26px;
+  padding: 0 8px 0 19px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 1px 3px rgba(28, 28, 30, 0.045);
+  font-weight: 650;
+}
+
+.system-strip .manual-refresh {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px !important;
+  border-color: rgba(10, 132, 255, 0.09);
+  background: rgba(10, 132, 255, 0.055);
+}
+
+.system-strip .logout-command {
+  padding: 0 7px;
+  color: rgba(60, 60, 67, 0.46);
 }
 
