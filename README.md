@@ -127,6 +127,8 @@ npm start
 
 Docker 方式会把程序封装在容器中，并把真实配置与地址缓存保存在宿主机的 `docker-data` 目录。该目录已被 Git 忽略，不会进入镜像或仓库。
 
+容器会以只读方式挂载 `public` 和 `server.js`。首次部署仍需构建镜像；后续普通代码更新只需拉取仓库并重建容器，无需重复拉取 Node 基础镜像。
+
 1. 创建 Docker 数据目录并复制配置模板：
 
 ```powershell
@@ -163,11 +165,24 @@ docker compose ps
 docker compose logs --tail 100 cockpit
 ```
 
-默认仍通过 `http://服务器地址:3456` 访问。容器异常退出或 Docker Desktop 重启后会自动恢复。停止或更新服务可使用：
+默认仍通过 `http://服务器地址:3456` 访问。容器异常退出或 Docker Desktop 重启后会自动恢复。
+
+停止服务：
 
 ```powershell
 docker compose down
-docker compose up -d --build
+```
+
+拉取代码并更新服务：
+
+```powershell
+./update-docker.ps1
+```
+
+仅当 `Dockerfile` 或基础镜像发生变化时才需要重新构建：
+
+```powershell
+./update-docker.ps1 -Build
 ```
 
 如需修改宿主机端口，可在执行 Compose 前设置 `TESLA_COCKPIT_PORT`，容器内部端口保持为 `3456`：

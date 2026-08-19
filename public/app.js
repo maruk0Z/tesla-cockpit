@@ -1,6 +1,7 @@
 const $ = (id) => document.getElementById(id);
 
 const fields = {
+  homeView: $("homeView"),
   carName: $("carName"),
   modelName: $("modelName"),
   stateText: $("stateText"),
@@ -87,6 +88,9 @@ const fields = {
 const TILE_URL = "https://wprd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7";
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 let mapFrame = null;
+let homeLayoutGeneration = 0;
+let homeLayoutTimer = null;
+let homeLayoutResetPending = false;
 let energyHoverPoints = [];
 let energyRows = [];
 let energyMode = "gross";
@@ -486,6 +490,25 @@ function resetHomeMaps() {
   mapState.route.userAdjusted = false;
   mapState.route.needsFit = true;
   if (!refitRouteMap()) scheduleMaps();
+}
+
+function scheduleHomeLayout({ resetMaps = false } = {}) {
+  homeLayoutResetPending ||= resetMaps;
+  const generation = ++homeLayoutGeneration;
+  window.clearTimeout(homeLayoutTimer);
+
+  const redraw = (pass) => {
+    if (generation !== homeLayoutGeneration || fields.homeView?.hidden) return;
+    renderEnergyChart(energyRows);
+    if (homeLayoutResetPending && pass === 0) {
+      homeLayoutResetPending = false;
+      resetHomeMaps();
+    } else if (!refitRouteMap()) scheduleMaps();
+    if (pass < 2) window.requestAnimationFrame(() => redraw(pass + 1));
+  };
+
+  window.requestAnimationFrame(() => window.requestAnimationFrame(() => redraw(0)));
+  homeLayoutTimer = window.setTimeout(() => redraw(3), 180);
 }
 
 function smoothPath(points) {
@@ -1034,16 +1057,19 @@ if (fields.manualRefresh) {
 });
 updateEnergyModeControls();
 window.addEventListener("resize", () => {
-  if (!refitRouteMap()) scheduleMaps();
+  scheduleHomeLayout();
 });
 window.addEventListener("offline", () => setConnectivityState(false));
 window.addEventListener("online", () => setConnectivityState(true));
 window.addEventListener("cockpit:home-visible", () => {
-  window.requestAnimationFrame(() => {
-    renderEnergyChart(energyRows);
-    resetHomeMaps();
-  });
+  scheduleHomeLayout({ resetMaps: true });
 });
+if (typeof ResizeObserver === "function") {
+  const homeLayoutObserver = new ResizeObserver(() => scheduleHomeLayout());
+  [fields.energyChart?.parentElement, mapState.current.shell, mapState.route.shell]
+    .filter(Boolean)
+    .forEach((element) => homeLayoutObserver.observe(element));
+}
 document.addEventListener("visibilitychange", () => {
   window.clearTimeout(refreshTimer);
   if (document.hidden) {

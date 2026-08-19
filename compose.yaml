@@ -19,6 +19,8 @@ services:
       TESLA_COCKPIT_ADDRESS_CACHE_PATH: /data/address-cache.json
     volumes:
       - ./docker-data:/data
+      - ./public:/app/public:ro
+      - ./server.js:/app/server.js:ro
     tmpfs:
       - /tmp
     extra_hosts:

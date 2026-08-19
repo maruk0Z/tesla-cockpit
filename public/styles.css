@@ -4614,3 +4614,31 @@ body {
   color: rgba(60, 60, 67, 0.46);
 }
 
+/* Align detail summaries and empty states with the quieter home surfaces. */
+.trip-summary article {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: var(--home-shadow-card);
+}
+
+.trip-detail-metrics article,
+.energy-day-metrics article,
+.statistics-breakdown article,
+.settings-runtime article,
+.settings-quality article {
+  border-radius: var(--home-radius-inset);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.trip-empty {
+  min-height: 180px;
+  margin: 12px;
+  border: 1px solid rgba(60, 60, 67, 0.055);
+  border-radius: var(--home-radius-inset);
+  background: rgba(248, 248, 250, 0.56);
+}
+
+.detail-placeholder.has-error {
+  color: rgba(60, 60, 67, 0.72);
+}
+
