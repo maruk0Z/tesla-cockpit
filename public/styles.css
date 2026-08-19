@@ -3816,6 +3816,215 @@ body.menu-open .app-menu {
   }
 }
 
+/* Final home interface consistency pass. */
+:root {
+  --home-radius-panel: 24px;
+  --home-radius-card: 20px;
+  --home-radius-inset: 14px;
+  --home-shadow-panel: 0 14px 34px rgba(28, 36, 50, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.94);
+  --home-shadow-card: 0 7px 20px rgba(28, 36, 50, 0.038), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.car-stage {
+  border-radius: 28px;
+  box-shadow: var(--home-shadow-panel);
+}
+
+.tesla-logo-card,
+.status-block,
+.metric-stack article,
+.map-panel,
+.drive-panel,
+.hero-vehicle-panel,
+.energy-chart-card,
+.hero-stat {
+  border-radius: var(--home-radius-card);
+  box-shadow: var(--home-shadow-card);
+}
+
+.left-rail .status-block,
+.left-rail .metric-stack article,
+.left-rail .today-drive-card {
+  border-color: var(--border-final);
+  box-shadow: var(--home-shadow-card);
+}
+
+.bottom-metrics article,
+.drive-numbers div {
+  border-radius: var(--home-radius-inset);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.system-strip {
+  gap: 2px;
+  min-height: 34px;
+  padding: 3px 4px;
+  border: 1px solid rgba(60, 60, 67, 0.075);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.54);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  backdrop-filter: saturate(160%) blur(18px);
+}
+
+.system-strip span,
+.system-strip time,
+.system-strip a {
+  padding: 0 7px;
+  color: rgba(60, 60, 67, 0.52);
+  font-size: 11px;
+  font-weight: 570;
+}
+
+.system-strip #headerState {
+  min-height: 26px;
+  padding: 0 8px 0 19px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 1px 3px rgba(28, 28, 30, 0.045);
+  font-weight: 650;
+}
+
+.system-strip .manual-refresh {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px !important;
+  border-color: rgba(10, 132, 255, 0.09);
+  background: rgba(10, 132, 255, 0.055);
+}
+
+.system-strip .logout-command {
+  padding: 0 7px;
+  color: rgba(60, 60, 67, 0.46);
+}
+
+.label,
+.muted,
+.metric-stack article > span,
+.hero-stat > span,
+.bottom-metrics article > span,
+.drive-numbers div > span,
+.battery-panel-head > span:first-child {
+  font-weight: 560;
+}
+
+.metric-unit,
+.metric-stack strong > .metric-unit,
+.hero-stat strong > .metric-unit,
+.bottom-metrics strong > .metric-unit,
+.drive-numbers strong > .metric-unit {
+  color: rgba(60, 60, 67, 0.48);
+  font-weight: 570;
+}
+
+.energy-controls {
+  gap: 7px;
+}
+
+.energy-mode-switch {
+  padding: 2px;
+  border-color: rgba(60, 60, 67, 0.075);
+  background: rgba(242, 243, 246, 0.72);
+}
+
+.energy-mode {
+  min-height: 22px;
+  padding: 0 7px;
+  font-size: 9px;
+  font-weight: 620;
+}
+
+.energy-mode[aria-pressed="true"] {
+  color: rgba(10, 104, 210, 0.88);
+  box-shadow: 0 1px 3px rgba(28, 28, 30, 0.07);
+}
+
+.energy-grid line {
+  stroke: rgba(60, 60, 67, 0.045);
+}
+
+.energy-axis-label,
+.energy-axis-unit,
+.energy-x-label {
+  color: rgba(60, 60, 67, 0.36);
+  font-size: 9px;
+  font-weight: 560;
+}
+
+.energy-point-label {
+  min-height: 24px;
+  padding: 5px 8px;
+  border-color: rgba(60, 60, 67, 0.075);
+  background: rgba(255, 255, 255, 0.88);
+  color: rgba(60, 60, 67, 0.68);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.energy-hover-tooltip {
+  border-color: rgba(60, 60, 67, 0.08);
+  box-shadow: 0 7px 18px rgba(28, 36, 50, 0.09);
+}
+
+.map-grid img {
+  filter: saturate(0.64) brightness(1.025) contrast(0.965);
+}
+
+.map-shell::after,
+.route-shell::after {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.route-endpoint text {
+  font-size: 8px;
+  font-weight: 680;
+}
+
+#routePath {
+  filter: drop-shadow(0 3px 6px rgba(0, 122, 255, 0.16));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .metric-stack article:hover,
+  .bottom-metrics article:hover,
+  .hero-stat:hover,
+  .battery-panel:hover,
+  .energy-chart-card:hover,
+  .vehicle-card:hover {
+    transform: none;
+  }
+
+  .metric-stack article:hover,
+  .hero-stat:hover,
+  .energy-chart-card:hover {
+    box-shadow: var(--home-shadow-card);
+  }
+
+  .bottom-metrics article:hover {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  }
+
+  .hero-vehicle-panel .battery-panel:hover,
+  .hero-vehicle-panel .vehicle-card:hover {
+    box-shadow: none;
+  }
+
+  .drilldown-target {
+    transition: transform 160ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .drilldown-target:hover {
+    transform: translateY(-1px);
+    border-color: rgba(10, 132, 255, 0.12);
+    box-shadow: 0 11px 28px rgba(28, 36, 50, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.94);
+  }
+
+  .hero-vehicle-panel .battery-panel.drilldown-target:hover,
+  .hero-vehicle-panel .vehicle-card.drilldown-target:hover {
+    box-shadow: none;
+  }
+}
+
 /* Semantic feedback, resilient module states, and restrained data motion. */
 :root {
   --semantic-online: #30c761;
