@@ -3571,6 +3571,11 @@ body.menu-open .app-menu {
   color: #d70015 !important;
 }
 
+.settings-status-pill.is-warning {
+  background: rgba(255, 159, 10, 0.10);
+  color: #9a6700 !important;
+}
+
 .settings-quality {
   display: grid;
   gap: 10px;
@@ -3704,6 +3709,7 @@ body.menu-open .app-menu {
 
 .settings-runtime .is-good { color: #248a3d; }
 .settings-runtime .is-bad { color: #d70015; }
+.settings-runtime .is-warning { color: #9a6700; }
 
 .settings-password-form {
   display: grid;

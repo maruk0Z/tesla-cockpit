@@ -33,7 +33,7 @@ const NAVIGATION_SECTIONS = Object.freeze([
   { id: "battery", path: "/battery", label: "电池", description: "电量、续航与停车能耗", timeRange: true },
   { id: "status", path: "/status", label: "车辆状态", description: "状态时间线与持续时间", timeRange: true },
   { id: "statistics", path: "/statistics", label: "统计", description: "选定时间范围汇总", timeRange: true },
-  { id: "settings", path: "/settings", label: "设置", description: "账户与数据源状态", timeRange: false },
+  { id: "settings", path: "/settings", label: "设置", description: "账户与运行状态", timeRange: false },
 ]);
 const loginAttempts = new Map();
 let vehicleCache = null;
@@ -59,6 +59,145 @@ let addressCachePrewarmRunning = false;
 let dataQualityCache = null;
 let activeConfig = null;
 let activeConfigMtimeMs = 0;
+const runtimeDiagnostics = {
+  grafana: {
+    lastAttemptAt: null,
+    lastSuccessAt: null,
+    lastDataSuccessAt: null,
+    lastFailureAt: null,
+    lastDataFailureAt: null,
+    lastError: null,
+    lastLatencyMs: null,
+    successCount: 0,
+    failureCount: 0,
+    consecutiveFailures: 0,
+  },
+  amap: {
+    lastAttemptAt: null,
+    lastSuccessAt: null,
+    lastFailureAt: null,
+    lastError: null,
+    lastLatencyMs: null,
+    successCount: 0,
+    failureCount: 0,
+    prewarm: {
+      running: false,
+      lastStartedAt: null,
+      lastCompletedAt: null,
+      lastError: null,
+      total: 0,
+      cached: 0,
+      pending: 0,
+      processed: 0,
+      failed: 0,
+    },
+  },
+  vehicle: {
+    lastAttemptAt: null,
+    lastSuccessAt: null,
+    lastFailureAt: null,
+    lastError: null,
+    servingStale: false,
+  },
+};
+
+function isoNow() {
+  return new Date().toISOString();
+}
+
+function isDockerRuntime() {
+  try {
+    return process.env.CONTAINER === "true" || fs.existsSync("/.dockerenv");
+  } catch (_) {
+    return false;
+  }
+}
+
+function cacheMapStats(caches) {
+  const now = Date.now();
+  const stats = { entries: 0, fresh: 0, expired: 0, pending: 0 };
+  for (const cache of caches) {
+    for (const entry of cache.values()) {
+      stats.entries += 1;
+      if (entry?.promise) stats.pending += 1;
+      else if (Number(entry?.expiresAt) > now) stats.fresh += 1;
+      else stats.expired += 1;
+    }
+  }
+  return stats;
+}
+
+function operationalSnapshot(config) {
+  const now = Date.now();
+  const detail = cacheMapStats([
+    tripsDetailCache,
+    chargingDetailCache,
+    tripsSummaryCache,
+    chargingSummaryCache,
+    energyDetailCache,
+    batteryDetailCache,
+    statusDetailCache,
+    statusSummaryCache,
+    statisticsDetailCache,
+  ]);
+  let vehicleStatus = "empty";
+  if (vehicleCache) {
+    if (runtimeDiagnostics.vehicle.servingStale) vehicleStatus = "fallback";
+    else vehicleStatus = now < vehicleCache.expiresAt ? "fresh" : "expired";
+  }
+  const amap = runtimeDiagnostics.amap;
+  const amapConfigured = Boolean(config?.amapWebServiceKey);
+  const cachedAddresses = Object.keys(persistentAddressCache.entries || {}).length;
+  const amapFailureIsLatest = Boolean(amap.lastFailureAt && (!amap.lastSuccessAt || amap.lastFailureAt > amap.lastSuccessAt));
+  const amapStatus = !amapConfigured
+    ? cachedAddresses ? "cache_only" : "disabled"
+    : amap.prewarm.running || amapLookupQueue.length || activeAmapLookups
+      ? "working"
+      : amapFailureIsLatest
+        ? "degraded"
+        : amap.lastSuccessAt
+          ? "online"
+          : cachedAddresses
+            ? "cached"
+            : "idle";
+  return {
+    service: {
+      status: "online",
+      runtime: isDockerRuntime() ? "docker" : "process",
+      containerStatus: isDockerRuntime() ? "running" : "not_applicable",
+      startedAt: new Date(Date.now() - process.uptime() * 1000).toISOString(),
+      uptimeSeconds: Math.round(process.uptime()),
+      port: PORT,
+    },
+    grafana: { ...runtimeDiagnostics.grafana },
+    cache: {
+      vehicle: {
+        status: vehicleStatus,
+        fetchedAt: vehicleCache ? new Date(vehicleCache.fetchedAt).toISOString() : null,
+        expiresAt: vehicleCache ? new Date(vehicleCache.expiresAt).toISOString() : null,
+        ageSeconds: vehicleCache ? Math.max(0, Math.round((now - vehicleCache.fetchedAt) / 1000)) : null,
+        lastError: runtimeDiagnostics.vehicle.lastError,
+      },
+      detail,
+    },
+    amap: {
+      status: amapStatus,
+      configured: amapConfigured,
+      cachedAddresses,
+      cacheUpdatedAt: persistentAddressCache.updatedAt || amap.lastSuccessAt,
+      queued: amapLookupQueue.length,
+      active: activeAmapLookups,
+      pendingLookups: pendingAddressLookups.size,
+      lastSuccessAt: amap.lastSuccessAt,
+      lastFailureAt: amap.lastFailureAt,
+      lastError: amap.lastError,
+      lastLatencyMs: amap.lastLatencyMs,
+      successCount: amap.successCount,
+      failureCount: amap.failureCount,
+      prewarm: { ...amap.prewarm },
+    },
+  };
+}
 
 async function getCachedDetailSummary(cache, key, loader) {
   const cached = cache.get(key);
@@ -456,6 +595,9 @@ function fromGrafanaDate(value) {
 }
 
 async function queryGrafana(config, rawSql, refId = "A", maxDataPoints = 100) {
+  const startedAt = Date.now();
+  const attemptedAt = isoNow();
+  runtimeDiagnostics.grafana.lastAttemptAt = attemptedAt;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), GRAFANA_TIMEOUT_MS);
   try {
@@ -488,10 +630,26 @@ async function queryGrafana(config, rawSql, refId = "A", maxDataPoints = 100) {
     if (!response.ok || (result && result.error)) {
       throw new Error((result && result.error) || `Grafana API ${response.status}`);
     }
+    const completedAt = isoNow();
+    runtimeDiagnostics.grafana.lastSuccessAt = completedAt;
+    runtimeDiagnostics.grafana.lastLatencyMs = Date.now() - startedAt;
+    runtimeDiagnostics.grafana.lastError = null;
+    runtimeDiagnostics.grafana.successCount += 1;
+    runtimeDiagnostics.grafana.consecutiveFailures = 0;
+    if (refId !== "H") runtimeDiagnostics.grafana.lastDataSuccessAt = completedAt;
     return tableToRows(result.frames && result.frames[0]);
   } catch (error) {
-    if (error.name === "AbortError") throw new Error(`Grafana 请求超过 ${Math.round(GRAFANA_TIMEOUT_MS / 1000)} 秒`);
-    throw error;
+    const normalizedError = error.name === "AbortError"
+      ? new Error(`Grafana 请求超过 ${Math.round(GRAFANA_TIMEOUT_MS / 1000)} 秒`)
+      : error;
+    const failedAt = isoNow();
+    runtimeDiagnostics.grafana.lastFailureAt = failedAt;
+    runtimeDiagnostics.grafana.lastLatencyMs = Date.now() - startedAt;
+    runtimeDiagnostics.grafana.lastError = normalizedError.message;
+    runtimeDiagnostics.grafana.failureCount += 1;
+    runtimeDiagnostics.grafana.consecutiveFailures += 1;
+    if (refId !== "H") runtimeDiagnostics.grafana.lastDataFailureAt = failedAt;
+    throw normalizedError;
   } finally {
     clearTimeout(timeout);
   }
@@ -634,6 +792,7 @@ function savePersistentAddressCache() {
     if (fs.existsSync(ADDRESS_RESULT_CACHE_PATH)) fs.renameSync(ADDRESS_RESULT_CACHE_PATH, backupPath);
     fs.renameSync(temporaryPath, ADDRESS_RESULT_CACHE_PATH);
     if (fs.existsSync(backupPath)) fs.unlinkSync(backupPath);
+    persistentAddressCache.updatedAt = payload.updatedAt;
   } catch (error) {
     if (!fs.existsSync(ADDRESS_RESULT_CACHE_PATH) && fs.existsSync(backupPath)) fs.renameSync(backupPath, ADDRESS_RESULT_CACHE_PATH);
     if (fs.existsSync(temporaryPath)) fs.unlinkSync(temporaryPath);
@@ -728,7 +887,10 @@ async function lookupAmapAddress(config, latitude, longitude, priority = "high")
   if (cached?.label) return cached;
   if (pendingAddressLookups.has(coordinateKey)) return pendingAddressLookups.get(coordinateKey);
 
+  let lookupStartedAt = 0;
   const promise = enqueueAmapLookup(async () => {
+    lookupStartedAt = Date.now();
+    runtimeDiagnostics.amap.lastAttemptAt = isoNow();
     let lastError = null;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const throttleDelay = Math.max(0, AMAP_MIN_INTERVAL_MS - (Date.now() - lastAmapLookupAt));
@@ -772,7 +934,19 @@ async function lookupAmapAddress(config, latitude, longitude, priority = "high")
       await wait(2000 * (attempt + 1));
     }
     throw lastError || new Error("高德查询重试失败");
-  }, priority);
+  }, priority).then((result) => {
+    runtimeDiagnostics.amap.lastSuccessAt = isoNow();
+    runtimeDiagnostics.amap.lastLatencyMs = lookupStartedAt ? Date.now() - lookupStartedAt : null;
+    runtimeDiagnostics.amap.lastError = null;
+    runtimeDiagnostics.amap.successCount += 1;
+    return result;
+  }, (error) => {
+    runtimeDiagnostics.amap.lastFailureAt = isoNow();
+    runtimeDiagnostics.amap.lastLatencyMs = lookupStartedAt ? Date.now() - lookupStartedAt : null;
+    runtimeDiagnostics.amap.lastError = error.message;
+    runtimeDiagnostics.amap.failureCount += 1;
+    throw error;
+  });
   pendingAddressLookups.set(coordinateKey, promise);
   try {
     return await promise;
@@ -849,6 +1023,11 @@ FROM all_points;
     const key = addressCoordinateKey(row.latitude, row.longitude);
     return key && !persistentAddressCache.entries[key]?.label;
   });
+  runtimeDiagnostics.amap.prewarm.total = rows.length;
+  runtimeDiagnostics.amap.prewarm.cached = rows.length - pending.length;
+  runtimeDiagnostics.amap.prewarm.pending = pending.length;
+  runtimeDiagnostics.amap.prewarm.processed = 0;
+  runtimeDiagnostics.amap.prewarm.failed = 0;
   console.log(`[amap] address cache: ${rows.length - pending.length} cached, ${pending.length} pending`);
   let failed = 0;
   let lastFailure = "";
@@ -861,6 +1040,8 @@ FROM all_points;
       if (failed <= 3 || failed % 50 === 0) console.warn(`[amap] background failures: ${failed} (${lastFailure})`);
     })));
     processed += batch.length;
+    runtimeDiagnostics.amap.prewarm.processed = processed;
+    runtimeDiagnostics.amap.prewarm.failed = failed;
     if (processed === pending.length || processed % 50 < batch.length) {
       console.log(`[amap] address cache progress: ${processed}/${pending.length}, ${failed} failed`);
     }
@@ -880,14 +1061,21 @@ function scheduleAddressCachePrewarm(delayMs = 3000) {
   addressCachePrewarmTimer = setTimeout(async () => {
     addressCachePrewarmTimer = null;
     addressCachePrewarmRunning = true;
+    runtimeDiagnostics.amap.prewarm.running = true;
+    runtimeDiagnostics.amap.prewarm.lastStartedAt = isoNow();
+    runtimeDiagnostics.amap.prewarm.lastError = null;
     let failed = 0;
     try {
       failed = await prewarmAddressCache();
     } catch (error) {
       failed = 1;
+      runtimeDiagnostics.amap.prewarm.lastError = error.message;
       console.warn(`[amap] cache prewarm failed: ${error.message}`);
     } finally {
       addressCachePrewarmRunning = false;
+      runtimeDiagnostics.amap.prewarm.running = false;
+      runtimeDiagnostics.amap.prewarm.failed = failed;
+      runtimeDiagnostics.amap.prewarm.lastCompletedAt = isoNow();
     }
     if (failed > 0) scheduleAddressCachePrewarm(60 * 1000);
   }, delayMs);
@@ -1983,6 +2171,7 @@ async function getCachedVehicleData(force = false) {
   }
 
   vehicleRequestPromise = (async () => {
+    runtimeDiagnostics.vehicle.lastAttemptAt = isoNow();
     try {
       const data = await getVehicleData();
       const fetchedAt = Date.now();
@@ -1992,8 +2181,14 @@ async function getCachedVehicleData(force = false) {
         fetchedAt,
         expiresAt: fetchedAt + refreshAfterSeconds * 1000,
       };
+      runtimeDiagnostics.vehicle.lastSuccessAt = new Date(fetchedAt).toISOString();
+      runtimeDiagnostics.vehicle.lastError = null;
+      runtimeDiagnostics.vehicle.servingStale = false;
       return vehicleResponse(data, "fresh", fetchedAt);
     } catch (error) {
+      runtimeDiagnostics.vehicle.lastFailureAt = isoNow();
+      runtimeDiagnostics.vehicle.lastError = error.message;
+      runtimeDiagnostics.vehicle.servingStale = Boolean(vehicleCache);
       if (vehicleCache) {
         return vehicleResponse(vehicleCache.data, "stale", vehicleCache.fetchedAt, error.message);
       }
@@ -2011,8 +2206,31 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     if (url.pathname === "/api/health") {
       try {
-        loadConfig();
-        json(res, 200, { ok: true, config: "valid", time: new Date().toISOString() });
+        const config = loadConfig();
+        const snapshot = operationalSnapshot(config);
+        const grafanaFailureIsLatest = Boolean(
+          snapshot.grafana.lastFailureAt
+          && (!snapshot.grafana.lastSuccessAt || snapshot.grafana.lastFailureAt > snapshot.grafana.lastSuccessAt),
+        );
+        json(res, 200, {
+          ok: true,
+          status: grafanaFailureIsLatest ? "degraded" : "online",
+          config: "valid",
+          time: isoNow(),
+          service: snapshot.service,
+          dependencies: {
+            grafana: {
+              status: !snapshot.grafana.lastAttemptAt ? "unknown" : grafanaFailureIsLatest ? "degraded" : "online",
+              lastSuccessAt: snapshot.grafana.lastSuccessAt,
+              lastFailureAt: snapshot.grafana.lastFailureAt,
+            },
+            amap: {
+              status: snapshot.amap.status,
+              lastSuccessAt: snapshot.amap.lastSuccessAt,
+              lastFailureAt: snapshot.amap.lastFailureAt,
+            },
+          },
+        });
       } catch (error) {
         json(res, 503, { ok: false, config: "invalid", message: error.message, time: new Date().toISOString() });
       }
@@ -2099,12 +2317,14 @@ const server = http.createServer(async (req, res) => {
 
   if (url.pathname === "/api/settings" && req.method === "GET") {
     if (url.searchParams.get("force") === "1") dataQualityCache = null;
-    const startedAt = Date.now();
     let grafanaOnline = false;
     let grafanaError = null;
+    let probeLatencyMs = null;
     let dataQuality = null;
     try {
+      const probeStartedAt = Date.now();
       await queryGrafana(config, "SELECT 1 AS connected;", "H", 1);
+      probeLatencyMs = Date.now() - probeStartedAt;
       grafanaOnline = true;
       dataQuality = await getDataQuality(config);
     } catch (error) {
@@ -2112,21 +2332,27 @@ const server = http.createServer(async (req, res) => {
     }
     let grafanaHost = "已配置";
     try { grafanaHost = new URL(config.grafanaUrl).host; } catch (_) { /* Keep the safe fallback. */ }
+    const operational = operationalSnapshot(config);
     json(res, 200, {
       ok: true,
       readOnly: true,
-      service: {
-        status: "online",
-        uptimeSeconds: Math.round(process.uptime()),
-        port: PORT,
-      },
+      service: operational.service,
       grafana: {
         status: grafanaOnline ? "online" : "error",
         host: grafanaHost,
         datasourceConfigured: Boolean(config.datasourceUid),
-        latencyMs: Date.now() - startedAt,
+        latencyMs: probeLatencyMs ?? operational.grafana.lastLatencyMs,
+        lastSuccessAt: operational.grafana.lastSuccessAt,
+        lastDataSuccessAt: operational.grafana.lastDataSuccessAt,
+        lastFailureAt: operational.grafana.lastFailureAt,
+        lastDataFailureAt: operational.grafana.lastDataFailureAt,
+        successCount: operational.grafana.successCount,
+        failureCount: operational.grafana.failureCount,
+        consecutiveFailures: operational.grafana.consecutiveFailures,
         error: grafanaError,
       },
+      cache: operational.cache,
+      amap: operational.amap,
       refresh: {
         activeSeconds: ACTIVE_REFRESH_SECONDS,
         restingSeconds: RESTING_REFRESH_SECONDS,

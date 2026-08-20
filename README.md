@@ -63,6 +63,7 @@
 - **统计汇总**：按今天、最近 7 天、最近 30 天、本月、本年或自定义时间汇总数据。
 - **地图与地址**：使用高德地图展示当前位置和行程路线，通过逆地理编码生成中文地点名称。
 - **访问保护**：PBKDF2-SHA256 密码哈希、签名会话 Cookie 和页面登录保护。
+- **运行诊断**：在设置页查看 Docker/Cockpit 状态、Grafana 最近成功查询、数据缓存新鲜度及高德地址缓存与失败计数。
 
 当前版本按单车、桌面大屏和只读场景设计，不包含车辆控制、充电费用、胎压、电池健康度、多车对比或数据导出。
 
@@ -163,6 +164,7 @@ docker compose up -d --build
 ```powershell
 docker compose ps
 docker compose logs --tail 100 cockpit
+curl.exe http://localhost:3456/api/health
 ```
 
 默认仍通过 `http://服务器地址:3456` 访问。容器异常退出或 Docker Desktop 重启后会自动恢复。

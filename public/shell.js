@@ -116,7 +116,7 @@ const fallbackSections = [
   { id: "battery", path: "/battery", label: "电池", description: "电量、续航与停车能耗" },
   { id: "status", path: "/status", label: "车辆状态", description: "状态时间线与持续时间" },
   { id: "statistics", path: "/statistics", label: "统计", description: "选定时间范围汇总" },
-  { id: "settings", path: "/settings", label: "设置", description: "账户与数据源状态" },
+  { id: "settings", path: "/settings", label: "设置", description: "账户与运行状态" },
 ];
 
 const rangeLabels = {
@@ -337,6 +337,18 @@ function formatDuration(value) {
   const minutes = Math.round(Number(value) || 0);
   const hours = Math.floor(minutes / 60);
   return hours ? `${hours} 小时 ${minutes % 60} 分钟` : `${minutes} 分钟`;
+}
+
+function formatOperationalTime(value) {
+  return value ? formatDateTime(value) : "尚无记录";
+}
+
+function formatOperationalAge(value) {
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds)) return "尚无数据";
+  if (seconds < 60) return `${Math.max(0, Math.round(seconds))} 秒`;
+  if (seconds < 3600) return `${Math.round(seconds / 60)} 分钟`;
+  return `${Math.round(seconds / 3600)} 小时`;
 }
 
 function loadRange() {
@@ -919,24 +931,62 @@ function renderSettings(payload) {
   shellFields.settingsView.hidden = false;
   const service = payload.service || {};
   const grafana = payload.grafana || {};
+  const cache = payload.cache || {};
+  const vehicleCache = cache.vehicle || {};
+  const detailCache = cache.detail || {};
+  const amap = payload.amap || {};
   const refresh = payload.refresh || {};
   const security = payload.security || {};
+  const vehicleCacheStates = {
+    fresh: ["数据新鲜", "is-good"],
+    fallback: ["降级缓存", "is-warning"],
+    expired: ["等待刷新", "is-warning"],
+    empty: ["尚未建立", ""],
+  };
+  const amapStates = {
+    online: ["可用", "is-good"],
+    working: ["正在处理", "is-good"],
+    cached: ["缓存可用", "is-good"],
+    cache_only: ["仅使用缓存", "is-warning"],
+    degraded: ["最近查询失败", "is-bad"],
+    idle: ["等待首次查询", ""],
+    disabled: ["未配置", "is-bad"],
+  };
+  const vehicleCacheState = vehicleCacheStates[vehicleCache.status] || ["未知", ""];
+  const amapState = amapStates[amap.status] || ["未知", ""];
+  const diagnosticDegraded = Number(grafana.consecutiveFailures || 0) > 0
+    || vehicleCache.status === "fallback"
+    || amap.status === "degraded";
   const allOnline = service.status === "online" && grafana.status === "online";
-  shellFields.settingsOverallStatus.textContent = allOnline ? "运行正常" : "需要检查";
+  shellFields.settingsOverallStatus.textContent = !allOnline ? "需要检查" : diagnosticDegraded ? "部分降级" : "运行正常";
   shellFields.settingsOverallStatus.classList.toggle("is-error", !allOnline);
+  shellFields.settingsOverallStatus.classList.toggle("is-warning", allOnline && diagnosticDegraded);
   shellFields.settingsRuntime.innerHTML = settingsRows([
     ["Cockpit 服务", service.status === "online" ? "在线" : "异常", service.status === "online" ? "is-good" : "is-bad"],
+    [service.runtime === "docker" ? "Docker 容器" : "运行环境", service.runtime === "docker" ? "运行中" : "本机进程", "is-good"],
     ["Grafana 数据源", grafana.status === "online" ? "已连接" : "连接失败", grafana.status === "online" ? "is-good" : "is-bad"],
+    ["最近成功数据查询", formatOperationalTime(grafana.lastDataSuccessAt || grafana.lastSuccessAt)],
     ["Grafana 主机", grafana.host || "--"],
     ["数据源配置", grafana.datasourceConfigured ? "已配置" : "未配置", grafana.datasourceConfigured ? "is-good" : "is-bad"],
-    ["查询延迟", `${formatNumber(grafana.latencyMs)} ms`],
+    ["实时探测延迟", Number.isFinite(Number(grafana.latencyMs)) ? `${formatNumber(grafana.latencyMs)} ms` : "--"],
     ["服务运行时间", formatDuration((Number(service.uptimeSeconds) || 0) / 60)],
   ]);
+  const pendingAddresses = Number(amap.pendingLookups || 0);
+  const prewarm = amap.prewarm || {};
+  const addressQueueText = prewarm.running
+    ? `${formatNumber(prewarm.processed)}/${formatNumber(prewarm.pending)} · 预热中`
+    : `${formatNumber(pendingAddresses)} 个待处理`;
   shellFields.settingsRefresh.innerHTML = settingsRows([
+    ["车辆数据缓存", vehicleCacheState[0], vehicleCacheState[1]],
+    ["缓存数据年龄", formatOperationalAge(vehicleCache.ageSeconds), vehicleCache.status === "fallback" ? "is-warning" : ""],
+    ["详情缓存", `${formatNumber(detailCache.fresh)}/${formatNumber(detailCache.entries)} 条可用`],
+    ["高德地址服务", amapState[0], amapState[1]],
+    ["已缓存位置", `${formatNumber(amap.cachedAddresses)} 个`],
+    ["地址查询队列", addressQueueText, prewarm.running ? "is-good" : ""],
+    ["启动后地址失败", `${formatNumber(amap.failureCount)} 次`, amap.status === "degraded" ? "is-warning" : Number(amap.failureCount) ? "" : "is-good"],
+    ["地址缓存更新", formatOperationalTime(amap.cacheUpdatedAt || amap.lastSuccessAt)],
     ["车辆在线刷新", `${formatNumber(refresh.activeSeconds)} 秒`],
     ["车辆休眠刷新", `${formatNumber((refresh.restingSeconds || 0) / 60)} 分钟`],
-    ["详情数据缓存", `${formatNumber((refresh.detailCacheSeconds || 0) / 60)} 分钟`],
-    ["地址识别缓存", `${formatNumber((refresh.addressCacheSeconds || 0) / 60)} 分钟`],
     ["数据访问模式", payload.readOnly ? "只读" : "可写", payload.readOnly ? "is-good" : "is-bad"],
   ]);
   shellFields.settingsSecurity.innerHTML = settingsRows([
